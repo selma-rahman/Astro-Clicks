@@ -7,4 +7,4 @@ Future updates include, but are not limited to:
 - Gui visulaization features
 - Facts and History
 - 
-# Astro-Clicks
+☆Astro-Clicks☆
