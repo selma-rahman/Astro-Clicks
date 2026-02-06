@@ -6,5 +6,5 @@ Future updates include, but are not limited to:
 - Mini Game features
 - Gui visulaization features
 - Facts and History
-- 
+
 ☆Astro-Clicks☆
