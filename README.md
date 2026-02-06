@@ -10,7 +10,7 @@ Future updates include, but are not limited to:
 
 
 ### What is an Exoplanet?
-An Exoplanet are, in short, planets that orbit around stars other than our own (sun). NASA has confirmed the existance of at least 6,000 exoplanets. The closest exoplanet to our solar system is **Proxima Centauri b**. There are several types of exoplanets, such as *Gas giants*, *Neptunian planets*, *Super-Earths*, and *Terrestrial planets*.
+Exoplanets are, in short, planets that orbit around stars other than our own (sun). NASA has confirmed the existance of at least 6,000 exoplanets. The closest exoplanet to our solar system is **Proxima Centauri b**. There are several types of exoplanets, such as *Gas giants*, *Neptunian planets*, *Super-Earths*, and *Terrestrial planets*.
 
 Please visit https://science.nasa.gov/exoplanets/ to learn more about NASA and their exoplanet discovery!
 ☆Astro-Clicks☆
