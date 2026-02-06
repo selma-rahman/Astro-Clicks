@@ -14,3 +14,7 @@ Exoplanets are, in short, planets that orbit around stars other than our own (su
 
 Please visit https://science.nasa.gov/exoplanets/ to learn more about NASA and their exoplanet discovery!
 ☆Astro-Clicks☆
+
+　*　　　　•　　　　　°☆•　　°　°　..*　　　　°　*.　　　　　.　　　　　　*°•✦　✯　　　•·　　*　　　*　　.·　　　　✶★　　*　　　　•　　　　　°☆•　　°　°　..*　　　　°　*.　　　　　.　　 •　°·　　*　　　　　.　
+.　·　*　　*　　　　*　*　　.　　　　　　　　*　　*　·　*　　　　　·　　　✷　　　　•　°　°　　　　　　★　　　　　　·　　　✶　　✵　　　　　·
+　　　　°　　　　　*　　°　✵　　　　　°•　　　　　　　　　　　✦　•　°　　　•　°·　　*　　　　　.　·*　　.•　　　　·✯　　　　.　*　　　　°   　　•　°·　　*　　　　　.　·*　　.•　　　　·✯　　　　.　*　　　　°　°·★•　　　　　.　　•*✦✯　•··　·　　　　.　　*•　　　　　　　..　*　　.　　　✯　　　　*　·　　　　　.　　　　.　　　　　.✵　.°　°•　　　*　°*　　　　　　　　　　·.　　✧　　　•　　·　·　　°　✧•　　　　　　　　　·*•.　　　　　　　　°°　✯•　　　　✧·.　　　*　　　　　　•　•°　　　　✧°*　　　　*　　　　　••　　　✶*　　　　*　••✦.　　　*　　　°　✯.　　　　• ★　　*·•.*　°✷　✶　　.　•　　　　　·　✵　　　　.　✶　
