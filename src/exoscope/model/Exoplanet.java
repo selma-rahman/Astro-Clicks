@@ -57,9 +57,12 @@ public class Exoplanet {
 	@Override
 	public String toString() {
 		return "Name: " + name +
+			   ", Host star: " + hostStar +
 		       ", Year: " + year +
+		       ", Discovery method: " + discoveryMethod +
 		       ", Radius: " + radius +
-		       ", Method: " + discoveryMethod;
+		       ", Mass: " + mass +
+		       ", Orbital period: " + orbitalPeriod;
 	}
 }
 

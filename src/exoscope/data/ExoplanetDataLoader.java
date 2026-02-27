@@ -20,6 +20,10 @@ public class ExoplanetDataLoader {
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 
+        	for (int i = 0; i < 294; i++) {
+        		br.readLine();
+        	}
+        	
             String line;
 
             // skip comment lines that start with #
@@ -47,18 +51,19 @@ public class ExoplanetDataLoader {
                 // split while handling quoted commas
                 String[] fields = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
 
-                String name = getField(fields, colIndex, "pl_name");
-                String hostStar = getField(fields, colIndex, "hostname");
-
-                Double radius = parseDouble(getField(fields, colIndex, "pl_rade"));
-                Double orbitalPeriod = parseDouble(getField(fields, colIndex, "pl_orbper"));
-
-                String discoveryMethod = getField(fields, colIndex, "discoverymethod");
-                Integer year = parseInt(getField(fields, colIndex, "disc_year"));
-
-              
-                Double mass = parseDouble(getField(fields, colIndex, "pl_masse"));
-                Double distance = parseDouble(getField(fields, colIndex, "st_dist"));
+                String name = fields[1];
+                String hostStar = fields[2];
+                Double radius = parseDouble(fields[43]);
+                if (radius == null || radius == 0.0) continue;
+                Double mass = parseDouble(fields[51]);
+                if (mass == null || mass == 0.0) continue;
+                Double orbitalPeriod = parseDouble(fields[35]);
+                if (orbitalPeriod == null || orbitalPeriod == 0.0) continue;
+                String discoveryMethod = fields[14];
+                Double distance = parseDouble(fields[219]);
+                if (distance == null || distance == 0.0) continue;
+                Integer year = parseInt(fields[15]);
+                if (year == null || year == 0.0) continue;
 
                 Exoplanet planet = new Exoplanet(
                         name,
@@ -73,6 +78,7 @@ public class ExoplanetDataLoader {
 
                 planets.add(planet);
             }
+            
 
         } catch (IOException e) {
             System.out.println("Error loading CSV: " + e.getMessage());
