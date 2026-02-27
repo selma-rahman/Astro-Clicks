@@ -2,18 +2,18 @@ package logic;
 import model.Exoplanet;
 import java.util.ArrayList;
 import java.util.*;
-import java.util.List;
 
 @SuppressWarnings("unused")
 public class QueryEngine {
 	
 	List<Exoplanet> planets;
-	// List<Exoplanet> results;
+	private List<Exoplanet> results = new ArrayList<>();
+	
 	
 	// this is a constructor to takes a list of planets
     public QueryEngine(List<Exoplanet> p) {
         // to record a copy so original list does not change
-        this.planets = new ArrayList<>(p); // issue with bug 2 as constructor was broken , was <planets>
+        this.planets = p;
     }
 	
 	public List<Exoplanet> filterByRadius(double min, double max) {
@@ -39,7 +39,7 @@ public class QueryEngine {
 	public List<Exoplanet> filterByHostStar(String star) {
 		List<Exoplanet> results = new ArrayList<>(); //bug fix
 		for (Exoplanet planet : planets) {
-			if (planet.getHostStar().equals(star)){
+			if (planet.getHostStar().toLowerCase().contains(star.toLowerCase())){
 				results.add(planet);
 			}
 		}
@@ -57,10 +57,9 @@ public class QueryEngine {
 		
 	}
 	
-	public List<Exoplanet> filterByYear(double min, double max) {
-		List<Exoplanet> results = new ArrayList<>(); //bug fix
+	public List<Exoplanet> filterByYear(int year) {
 		for (Exoplanet planet:planets) {
-			if (planet.getYear() >= min && planet.getYear() <= max) {
+			if (planet.getYear() == year) {
 				results.add(planet);
 			}
 		}
@@ -87,12 +86,15 @@ public class QueryEngine {
 		return results;
 	}
 	
-	// bug c3a-2 this cals start index properly and returns empty if page dosent exist
-	public List<Exoplanet> getPage(List<Exoplanet> results, int page, int pageSize) {
-	    int start = (page - 1) * pageSize;
-	    int end = Math.min(start + pageSize, results.size());
-	    if (start >= results.size()) return new ArrayList<>(); // no results for this page
-	    return new ArrayList<>(results.subList(start, end)); // fresh list
-	}	
+	public List<Exoplanet> filterByName(String name) {
+		for (Exoplanet planet : planets) {
+			if (planet.getName().toLowerCase().contains(name.toLowerCase())) {
+				results.add(planet);
+			}
+		}
+		return results;
+	}
+	
+	
 
 }
