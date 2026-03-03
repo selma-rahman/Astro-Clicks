@@ -26,44 +26,26 @@ public class ExoplanetDataLoader {
         	
             String line;
 
-            // skip comment lines that start with #
-            while ((line = br.readLine()) != null && line.startsWith("#")) {
-                // skip
-            }
-
-            // if no header found
-            if (line == null) {
-                return planets;
-            }
-
-            // header row
-            String[] headers = line.split(",");
-
-            // map column name to index
-            Map<String, Integer> colIndex = new HashMap<>();
-            for (int i = 0; i < headers.length; i++) {
-                colIndex.put(headers[i].trim(), i);
-            }
-
             // this is to read data rows
             while ((line = br.readLine()) != null) {
-
+            	            	
                 // split while handling quoted commas
                 String[] fields = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
-
+         
                 String name = fields[1];
                 String hostStar = fields[2];
+                if (fields[43] == null || fields[43] == "" || fields[43] == "0.0") continue;
                 Double radius = parseDouble(fields[43]);
-                if (radius == null || radius == 0.0) continue;
+                if (fields[51] == null || fields[51] == "" || fields[51] == "0.0") continue;
                 Double mass = parseDouble(fields[51]);
-                if (mass == null || mass == 0.0) continue;
+                if (fields[35] == null || fields[35] == "" || fields[35] == "0.0") continue;
                 Double orbitalPeriod = parseDouble(fields[35]);
-                if (orbitalPeriod == null || orbitalPeriod == 0.0) continue;
+                if (fields[14] == null || fields[14] == "" || fields[14] == "0.0") continue;
                 String discoveryMethod = fields[14];
+                if (fields[219] == null || fields[219] == "" || fields[219] == "0.0") continue;
                 Double distance = parseDouble(fields[219]);
-                if (distance == null || distance == 0.0) continue;
+                if (fields[15] == null || fields[15] == "" || fields[15] == "0.0") continue;
                 Integer year = parseInt(fields[15]);
-                if (year == null || year == 0.0) continue;
 
                 Exoplanet planet = new Exoplanet(
                         name,
