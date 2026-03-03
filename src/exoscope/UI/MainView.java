@@ -130,19 +130,27 @@ public class MainView {
 	public void print(List<Exoplanet> results) {
 		String kg = "y";
 		int x = 0;
-		int y = 5;
-		if ((kg.equals("y") && results.size() >= y) == false) {
-			System.out.println("No results found. Returning to main menu.");
+		if ((kg.equals("y") && results.size() >= 0) == false) {
+			System.out.println("No results found.");
 		}
-		while ((kg.equals("y") && results.size() >= y)) {
-			for (int i = x; i < y; i++) {
-				System.out.println(results.get(i).toString());
+		while ((kg.equals("y") && results.size() >= 0)) {
+			if (kg.equals("y") && (x <= (results.size()-5))) { // checks to make sure we can print 5 lines
+				for (int i = x; i < x+5; i++) {
+					System.out.println(results.get(i).toString());
+				}
+			} else {
+				int remainder = results.size() - x;
+				for (int i = x; i < x+remainder; i++) {
+					System.out.println(results.get(i).toString());
+				}
+				System.out.println("No more results found.");
+				break;
 			}
+			
 			System.out.println("Would you like to see more results? (y/n)");
 			kg = sc.nextLine();
 			x += 5;
-			y += 5;
-		}
+		} 
 		System.out.println("꩜ RETURNING TO MAIN MENU ꩜");
 	}
 	
