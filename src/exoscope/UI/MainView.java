@@ -42,8 +42,8 @@ public class MainView {
 			System.out.println("To search a planet by host star, enter 2");
 			System.out.println("To search a planet by discovery year, enter 3");
 			System.out.println("To search a planet by discovery method, enter 4");
-			System.out.println("To search a planet by radius, enter 5");
-			System.out.println("To search a planet by mass, enter 6");
+			System.out.println("To search a planet by radius (Earth radii), enter 5");
+			System.out.println("To search a planet by mass (Earth masses), enter 6");
 			System.out.println("To search a planet by orbital period, enter 7");
 			System.out.println("To return to main menu, enter 8");
 			getUserInput();
@@ -60,13 +60,24 @@ public class MainView {
 	}
 	
 	public void getUserInput() {
-		int choice = Integer.parseInt(sc.nextLine());
+		
+		int choice;
+		try {
+			choice = Integer.parseInt(sc.nextLine());
+		} catch (NumberFormatException e) {
+			System.out.println("Please enter a valid number (1-8).");
+			getUserInput();
+			return;
+		}
+		
+		List<Exoplanet> results;
 		switch (choice){
 			case 1:
 				System.out.println("* You can enter a partial planet name if you wish *");
 				System.out.println("Enter a planet name:");
 				String name = sc.nextLine();
-				List<Exoplanet> results = queryEngine.filterByName(name);
+				//List<Exoplanet>
+				results = queryEngine.filterByName(name);
 				print(results);
 				mainMenu();
 				break;
@@ -86,14 +97,14 @@ public class MainView {
 				mainMenu();
 				break;
 			case 4:
-				System.out.println("Enter a discvoery method:");
+				System.out.println("Enter a discovery method:");
 				String method = sc.nextLine();
 				results = queryEngine.filterByDiscoveryMethod(method);
 				print(results);
 				mainMenu();
 				break;
 			case 5:
-				System.out.println("Radius measured in units of radius of the Earth");
+				System.out.println("Radius measured in Earth radii");
 				System.out.println("Enter a lower radius boundary:");
 				Double lower = Double.parseDouble(sc.nextLine());
 				System.out.println("Enter an upper radius boundary:");
@@ -103,7 +114,7 @@ public class MainView {
 				mainMenu();
 				break;
 			case 6:
-				System.out.println("Mass measured in units of masses of the Earth");
+				System.out.println("Mass measured in Earth masses");
 				System.out.println("Enter a lower mass boundary:");
 				lower = Double.parseDouble(sc.nextLine());
 				System.out.println("Enter an upper mass boundary:");
@@ -123,6 +134,11 @@ public class MainView {
 				break;
 			case 8:
 				mainMenu();
+				break;
+			default:	// out of range number option fix
+				System.out.println("Please enter a valid input (1-8).");
+				getUserInput();
+				break;
 		}
 	
 	}

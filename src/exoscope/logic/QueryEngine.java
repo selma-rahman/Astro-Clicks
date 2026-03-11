@@ -58,6 +58,7 @@ public class QueryEngine {
 	}
 	
 	public List<Exoplanet> filterByYear(int year) {
+		List<Exoplanet> results = new ArrayList<>();
 		for (Exoplanet planet:planets) {
 			if (planet.getYear() == year) {
 				results.add(planet);
@@ -69,7 +70,7 @@ public class QueryEngine {
 	public List<Exoplanet> filterByDiscoveryMethod(String dm) {
 		List<Exoplanet> results = new ArrayList<>(); //bug fix
 		for (Exoplanet planet : planets) {
-			if (planet.getDiscoveryMethod().equals(dm)) {
+			if (planet.getDiscoveryMethod().equalsIgnoreCase(dm)) {	//case sensitivity
 				results.add(planet);
 			}
 		}
@@ -87,6 +88,7 @@ public class QueryEngine {
 	}
 	
 	public List<Exoplanet> filterByName(String name) {
+		List<Exoplanet> results = new ArrayList<>();
 		for (Exoplanet planet : planets) {
 			if (planet.getName().toLowerCase().contains(name.toLowerCase())) {
 				results.add(planet);
