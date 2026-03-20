@@ -30,7 +30,8 @@ public class ExoplanetDataLoader {
             while ((line = br.readLine()) != null) {
             	            	
                 // split while handling quoted commas
-                String[] fields = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+            	String[] fields = line.split(",",-1);
+                //String[] fields = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
          
                 String name = fields[1];
                 String hostStar = fields[2];
