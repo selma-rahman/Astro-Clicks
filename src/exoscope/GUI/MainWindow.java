@@ -2,14 +2,20 @@ package GUI;
 
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.plaf.basic.BasicScrollBarUI;
+
 import java.awt.*;
 import java.io.InputStream;
 import java.awt.event.*;
+import logic.QueryEngine;
+import model.Exoplanet;
+import java.util.List;
 
-public class MainWindow {
+public class MainWindow{
 	// color palette, hex codes
 	// BG = background
 	// COL = foreground/accent colors
+	
 	private static final Color BG_BASE = new Color(0x05, 0x05, 0x10); // black navy ish
 	private static final Color BG_PANEL = new Color(0x07, 0x07, 0x18); // lighter, for sidebar and cards
 	private static final Color BG_CARD = new Color(0x0a, 0x0a, 0x2a); // active or highlight stuff
@@ -25,9 +31,13 @@ public class MainWindow {
 	
 	private JFrame window;
 	
-	public MainWindow() {
+	private JLabel resultsCountLabel = new JLabel("0");;
+	
+	private List<Exoplanet> planets;
+	
+	public MainWindow(List<Exoplanet> planets) {
 		loadFont();
-		buildWindow();
+		buildWindow(planets);
 	}
 	
 	// loads the retroyy pixel font from the font folder/ still need to put in
@@ -35,13 +45,13 @@ public class MainWindow {
 	
 	private void loadFont() {
 		try {
-			InputStream is = getClass().getResourceAsStream("/fonts/PressStart2P.ttf"); // REMEMBER TO DOWNLOAD THIS FONT
+			InputStream is = getClass().getResourceAsStream("fonts/PressStart2P.ttf"); // REMEMBER TO DOWNLOAD THIS FONT
 			if ( is != null) {
 				Font base = Font.createFont(Font.TRUETYPE_FONT, is);
 				GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(base);
-				pixelFont = base.deriveFont(10f);
-				pixelFontSm = base.deriveFont(7f);
-				pixelFontXs = base.deriveFont(5f);
+				pixelFont = base.deriveFont(18f);
+				pixelFontSm = base.deriveFont(15f);
+				pixelFontXs = base.deriveFont(10f);
 			} else {
 				pixelFont = new Font("monospaced", Font.PLAIN, 10);
 				pixelFontSm = new Font("Monospaced", Font.PLAIN, 8);
@@ -55,7 +65,7 @@ public class MainWindow {
 		}
 	}
 	
-	private void buildWindow() {
+	private void buildWindow(List<Exoplanet> planets) {
 		window = new JFrame("EXOSCOPE v1.0");
 		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		window.setSize(1200, 700);
@@ -98,7 +108,7 @@ public class MainWindow {
 		root.setBorder(BorderFactory.createLineBorder(COL_BORDER, 3));
 		root.add(buildTitleBar(), BorderLayout.NORTH);
 		root.add(buildSidebar(), BorderLayout.WEST);
-		root.add(buildMain(), BorderLayout.CENTER);
+		root.add(buildMain(planets), BorderLayout.CENTER);
 		
 		window.setContentPane(root);;
 	}
@@ -176,28 +186,77 @@ public class MainWindow {
 	}
 		
 		// main area
-	private JPanel buildMain() {
+	private JPanel buildMain(List<Exoplanet> planets) {
 		JPanel main = new JPanel();
 		main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
 		main.setBackground(BG_BASE);
 		main.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 		main.setOpaque(false); // let the star field show through
+	
+		JPanel resultsContainer = new JPanel();
+		resultsContainer.setLayout(new BoxLayout(resultsContainer, BoxLayout.Y_AXIS));
+		resultsContainer.setOpaque(false);
 		
-		main.add(buildSearchBar());
+		resultsContainer.add(buildResultsHeader()); 
+		main.add(buildSearchBar(planets, resultsContainer));
 		main.add(Box.createVerticalStrut(12));
-		main.add(buildStatCards());
+		main.add(buildStatCards(planets));
 		main.add(Box.createVerticalStrut(12));
 		main.add(Box.createVerticalStrut(8));
-		main.add(buildResultsHeader());
-		main.add(buildPlaceholderResults());
-		
+		main.add(resultsContainer);
+			
 		return main;
 	}
 	
 	// search bar top of main area
 	// need to replace this jtextfield 
-	private JPanel buildSearchBar() {
-		JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 8));
+	private JPanel buildSearchBar(List<Exoplanet> planets, JPanel rc) {
+		QueryEngine qe = new QueryEngine(planets);
+		JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 6));
+		JTextField field = new JTextField(20);
+		
+		field.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String query = field.getText();
+				field.setText("");
+				// here we will need to consider discrimination between search buttons
+				List<Exoplanet> results = qe.filterByName(query);
+				
+				// reset result count for each search
+				resultsCountLabel.setText(Integer.toString(results.size()));	
+				
+				rc.removeAll();
+				
+				JScrollPane scrollPane = new JScrollPane(buildResults(results));
+				scrollPane.setOpaque(false);
+				scrollPane.getViewport().setOpaque(false);
+				
+				
+				scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+					@Override
+					protected void configureScrollBarColors() {
+						this.thumbColor = COL_BORDER;
+						this.trackColor = BG_CARD;
+					}
+				});
+				
+				scrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
+					@Override
+					protected void configureScrollBarColors() {
+						this.thumbColor = COL_BORDER;
+						this.trackColor = BG_CARD;
+					}
+				});
+	
+				rc.add(scrollPane);
+				
+				rc.revalidate();
+				rc.repaint();
+				
+			}
+		});
+		
 		bar.setBackground(BG_PANEL);
 		bar.setBorder(BorderFactory.createLineBorder(COL_BORDER, 3));
 		bar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
@@ -212,24 +271,36 @@ public class MainWindow {
 		
 		bar.add(prompt);
 		bar.add(text);
+		bar.add(field);
+		
 		return bar;
 	}
 	
-	private JPanel buildStatCards() {
+	private JPanel buildStatCards(List<Exoplanet> planets) {
 		// 1 row 3 columns 8px horizontal gap, 0 vertical gap
 		JPanel row = new JPanel(new GridLayout(1, 3, 8, 0));
 		row.setBackground(BG_BASE);;
 		row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
 		
-		row.add(statCard("PLANETS LOADED", "...", COL_TEXT));
-		row.add(statCard("RESULTS FOUND", "...", COL_GREEN));
-		row.add(statCard("PAGE", "...", COL_TEXT));
+		
+		
+		row.add(statCard("PLANETS LOADED",planets.size(), COL_TEXT));
+		
+		
+		// connects to actionperformed to reset count for each search
+		JPanel resultsCard = statCard("RESULTS FOUND",planets.size(), COL_GREEN);
+		this.resultsCountLabel = (JLabel) resultsCard.getComponent(1);
+		row.add(resultsCard);
+		
+		
+		row.add(statCard("PAGE", 67, COL_TEXT));
+		
 		
 		return row;
 	}
 	
 	// single stat box
-	private JPanel statCard(String label, String value, Color valueColor) {
+	private JPanel statCard(String label, int value, Color valueColor) {
 		JPanel card = new JPanel();
 		card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
 		card.setBackground(BG_PANEL);;
@@ -240,7 +311,8 @@ public class MainWindow {
 		lbl.setForeground(COL_BORDER);
 		lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
 		
-		JLabel val = new JLabel(value);
+		String v = Integer.toString(value);
+		JLabel val = new JLabel(v);
 		val.setFont(pixelFont);
         val.setForeground(valueColor);
         val.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -270,29 +342,30 @@ public class MainWindow {
         return hdr;
 	}
 	
-	// placeholder rows for now
-		private JPanel buildPlaceholderResults() {
+		private JPanel buildResults(List<Exoplanet> p) {
 			JPanel panel = new JPanel();
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 			panel.setBackground(BG_BASE);
+			panel.setOpaque(false);
 
-			String[] placeholders = {
-				"super mario vroom  |  weeee  |  2016",
-				"princess peach  |  eweeee  |  2016",
-				"big bowser boom  |  weee |  2016",
-			};
-
-			for (String p : placeholders) {
-				panel.add(buildPlanetRow(p));
+			for (Exoplanet i : p) {
+				String strP = i.toString();
+				panel.add(buildPlanetRow(strP));
 				panel.add(Box.createVerticalStrut(5));
 			}
+			if (p.size() == 0) {
+				panel = noResultsFound();
+			}
+			
 			return panel;
 		}
 
 		// a single result row
 		private JPanel buildPlanetRow(String text) {
-			JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 8));
+			JPanel row = new JPanel();
+			row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
 			row.setBackground(BG_PANEL);
+			row.setOpaque(false);
 			row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
 			row.setBorder(BorderFactory.createLineBorder(new Color(0x1a, 0x1a, 0x4a), 2));
 
@@ -305,13 +378,33 @@ public class MainWindow {
 			label.setForeground(COL_TEXT);
 
 			row.add(star);
+			row.add(Box.createHorizontalStrut(5));
 			row.add(label);
 			return row;
+		}
+		
+		private JPanel noResultsFound() {
+			JPanel nrf = new JPanel();
+			
+			nrf.setBackground(BG_PANEL);
+			nrf.setOpaque(false);
+			nrf.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+			nrf.setBorder(BorderFactory.createLineBorder(new Color(0x1a, 0x1a, 0x4a), 2));
+			
+			JLabel text = new JLabel("No results found.");
+			text.setFont(pixelFont);
+			text.setForeground(COL_TEXT);
+			
+			nrf.add(text);
+			return(nrf);
+
 		}
 
 		public void show() {
 			window.setVisible(true);
 		}
+		
+		
 
 	}
 	
