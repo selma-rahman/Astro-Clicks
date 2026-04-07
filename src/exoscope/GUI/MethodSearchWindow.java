@@ -1,5 +1,6 @@
 package GUI;
 
+// for method search
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;

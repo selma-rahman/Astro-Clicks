@@ -1,5 +1,6 @@
 package GUI;
 
+// for planet search
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;

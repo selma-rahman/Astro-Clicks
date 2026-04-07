@@ -1,5 +1,6 @@
 package GUI;
 
+// for radius and mass search
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;

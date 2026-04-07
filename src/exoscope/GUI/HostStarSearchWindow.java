@@ -1,5 +1,7 @@
 package GUI;
 
+// for host search
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
