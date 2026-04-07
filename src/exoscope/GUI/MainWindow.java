@@ -25,19 +25,25 @@ public class MainWindow{
 	private static final Color COL_ACCENT = new Color(0x7b, 0x7b, 0xff); // blue/purple for titles and things to be highlights
 	private static final Color COL_GREEN = new Color(0x00, 0xff, 0x88); // neon green, for the result count
 	
+	private String currentSearchType = "PLANET NAME"; // default search
+	
 	private Font pixelFont; // large
 	private Font pixelFontSm; // medium
 	private Font pixelFontXs; // small
 	
 	private JFrame window;
+	private JPanel sidebar;
+	private JLabel searchPromptLabel;
+	
 	
 	private JLabel resultsCountLabel = new JLabel("0");;
 	
 	private List<Exoplanet> planets;
 	
 	public MainWindow(List<Exoplanet> planets) {
+		this.planets = planets;
 		loadFont();
-		buildWindow(planets);
+		buildWindow();
 	}
 	
 	// loads the retroyy pixel font from the font folder/ still need to put in
@@ -65,7 +71,7 @@ public class MainWindow{
 		}
 	}
 	
-	private void buildWindow(List<Exoplanet> planets) {
+	private void buildWindow()  { //(List<Exoplanet> planets) {
 		window = new JFrame("EXOSCOPE v1.0");
 		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		window.setSize(1200, 700);
@@ -108,7 +114,8 @@ public class MainWindow{
 		root.setBorder(BorderFactory.createLineBorder(COL_BORDER, 3));
 		root.add(buildTitleBar(), BorderLayout.NORTH);
 		root.add(buildSidebar(), BorderLayout.WEST);
-		root.add(buildMain(planets), BorderLayout.CENTER);
+		//root.add(buildMain(planets), BorderLayout.CENTER);
+		root.add(buildMain(this.planets), BorderLayout.CENTER);
 		
 		window.setContentPane(root);;
 	}
@@ -130,13 +137,14 @@ public class MainWindow{
 		
 		// sidebar
 	private JPanel buildSidebar() {
-		JPanel sidebar = new JPanel();
+		//JPanel sidebar = new JPanel();
+		sidebar = new JPanel();
 		sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
 		sidebar.setBackground(BG_PANEL);
 		sidebar.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 0, 3, COL_BORDER), BorderFactory.createEmptyBorder(14, 10, 14, 10)));
 		sidebar.setPreferredSize(new Dimension(200, 0));
 		
-		sidebar.add(sidebarSection("// SEARCH BY"));
+		/*sidebar.add(sidebarSection("// SEARCH BY"));
 		sidebar.add(sidebarItem("PLANET NAME" , true));
 		sidebar.add(sidebarItem("HOST STAR", false));
 		sidebar.add(sidebarItem("METHOD", false));
@@ -145,12 +153,22 @@ public class MainWindow{
 		sidebar.add(sidebarItem("YEAR", false));
 		sidebar.add(Box.createVerticalStrut(6));
 		sidebar.add(sidebarSection("// INFO"));
+		sidebar.add(sidebarItem("DISC. METHODS", false)); */
+		sidebar.add(sidebarSection("// SEARCH BY"));
+		sidebar.add(sidebarItem("PLANET NAME", currentSearchType.equals("PLANET NAME")));
+		sidebar.add(sidebarItem("HOST STAR", currentSearchType.equals("HOST STAR")));
+		sidebar.add(sidebarItem("METHOD", currentSearchType.equals("METHOD")));
+		sidebar.add(sidebarItem("RADIUS / MASS", currentSearchType.equals("RADIUS / MASS")));
+		sidebar.add(sidebarItem("ORBIT PERIOD", currentSearchType.equals("ORBIT PERIOD")));
+		sidebar.add(sidebarItem("YEAR", currentSearchType.equals("YEAR")));
+		sidebar.add(Box.createVerticalStrut(6));
+		sidebar.add(sidebarSection("// INFO"));
 		sidebar.add(sidebarItem("DISC. METHODS", false));
 		
 		return sidebar;
 	}
 		
-	private JPanel sidebarItem(String text, boolean active) {
+	/* private JPanel sidebarItem(String text, boolean active) {
 		JPanel item = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 5));
 		item.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
 		item.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -174,6 +192,58 @@ public class MainWindow{
 		 item.add(arrow);
 		 item.add(label);
 		 return item;
+	} */
+	
+	private JPanel sidebarItem(String text, boolean active) {
+
+	    JPanel item = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 5));
+	    item.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
+	    item.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+	    if (active) {
+	        item.setBackground(BG_CARD);
+	        item.setBorder(BorderFactory.createLineBorder(COL_BORDER, 2));
+	    } else {
+	        item.setBackground(BG_PANEL);
+	        item.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+	    }
+
+	    JLabel arrow = new JLabel(active ? "\u25BA" : "  ");
+	    arrow.setFont(pixelFontXs);
+	    arrow.setForeground(COL_BORDER);
+
+	    JLabel label = new JLabel(text);
+	    label.setFont(pixelFontXs);
+	    label.setForeground(active ? COL_TEXT : COL_MUTED);
+
+	    item.add(arrow);
+	    item.add(label);
+
+	    // make clickable
+	    item.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+	    item.addMouseListener(new MouseAdapter() {
+	        @Override
+	        public void mouseClicked(MouseEvent e) {
+
+	            currentSearchType = text; // this tells the main search bar which type to search
+	            //window.getContentPane().remove(sidebar);
+	            //window.getContentPane().add(buildSidebar(), BorderLayout.WEST);
+	            // this kind of updates the search prompt 
+	            if (searchPromptLabel != null) {
+	                searchPromptLabel.setText("ENTER " + currentSearchType + ":");
+	       
+	            }
+	            // to refresh sidebar 
+	            window.remove(sidebar);
+	            sidebar = buildSidebar();
+	            window.add(sidebar, BorderLayout.WEST);
+	            window.revalidate();
+	            window.repaint();
+	        }
+	    });
+
+	    return item;
 	}
 	
 	private JLabel sidebarSection(String text) {
@@ -210,7 +280,7 @@ public class MainWindow{
 	
 	// search bar top of main area
 	// need to replace this jtextfield 
-	private JPanel buildSearchBar(List<Exoplanet> planets, JPanel rc) {
+	/*private JPanel buildSearchBar(List<Exoplanet> planets, JPanel rc) {
 		QueryEngine qe = new QueryEngine(planets);
 		JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 6));
 		JTextField field = new JTextField(20);
@@ -256,24 +326,99 @@ public class MainWindow{
 				
 			}
 		});
-		
-		bar.setBackground(BG_PANEL);
-		bar.setBorder(BorderFactory.createLineBorder(COL_BORDER, 3));
-		bar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-		
-		JLabel prompt = new JLabel("?");
-		prompt.setFont(pixelFontSm);
-		prompt.setForeground(COL_BORDER);
-		
-		JLabel text = new JLabel("ENTER PLANET NAME:");
-		text.setFont(pixelFontXs);
-		text.setForeground(COL_MUTED);
-		
-		bar.add(prompt);
-		bar.add(text);
-		bar.add(field);
-		
-		return bar;
+		*/
+	private JPanel buildSearchBar(List<Exoplanet> planets, JPanel rc) {
+	    QueryEngine qe = new QueryEngine(planets);
+	    JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 6));
+	    JTextField field = new JTextField(20);
+
+	    field.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	            String query = field.getText();
+	            field.setText("");
+
+	            List<Exoplanet> results;
+
+	            switch(currentSearchType) {
+	                case "PLANET NAME":
+	                    results = qe.filterByName(query);
+	                    break;
+	                case "HOST STAR":
+	                    results = qe.filterByHostStar(query);
+	                    break;
+	                case "METHOD":
+	                    results = qe.filterByDiscoveryMethod(query);
+	                    break;
+	                case "RADIUS / MASS":
+	                    String[] parts = query.split(",");
+	                    double min = Double.parseDouble(parts[0].trim());
+	                    double max = Double.parseDouble(parts[1].trim());
+	                    results = qe.filterByRadius(min, max); // or mass depending on implementation
+	                    break;
+	                case "ORBIT PERIOD":
+	                    parts = query.split(",");
+	                    min = Double.parseDouble(parts[0].trim());
+	                    max = Double.parseDouble(parts[1].trim());
+	                    results = qe.filterByOrbitalPeriod(min, max);
+	                    break;
+	                case "YEAR":
+	                    int year = Integer.parseInt(query.trim());
+	                    results = qe.filterByYear(year);
+	                    break;
+	                default:
+	                    results = qe.filterByName(query);
+	            }
+
+	            // update results count
+	            resultsCountLabel.setText(Integer.toString(results.size()));
+
+	            rc.removeAll();
+	            JScrollPane scrollPane = new JScrollPane(buildResults(results));
+	            scrollPane.setOpaque(false);
+	            scrollPane.getViewport().setOpaque(false);
+
+	            scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+	                @Override
+	                protected void configureScrollBarColors() {
+	                    this.thumbColor = COL_BORDER;
+	                    this.trackColor = BG_CARD;
+	                }
+	            });
+
+	            scrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
+	                @Override
+	                protected void configureScrollBarColors() {
+	                    this.thumbColor = COL_BORDER;
+	                    this.trackColor = BG_CARD;
+	                }
+	            });
+
+	            rc.add(scrollPane);
+	            rc.revalidate();
+	            rc.repaint();
+	        }
+	    });
+
+	    bar.setBackground(BG_PANEL);
+	    bar.setBorder(BorderFactory.createLineBorder(COL_BORDER, 3));
+	    bar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+
+	    // small arrow prompt
+	    JLabel prompt = new JLabel("?");
+	    prompt.setFont(pixelFontSm);
+	    prompt.setForeground(COL_BORDER);
+
+	    // this is now the class field so we can update dynamically
+	    searchPromptLabel = new JLabel("ENTER PLANET NAME:");
+	    searchPromptLabel.setFont(pixelFontXs);
+	    searchPromptLabel.setForeground(COL_MUTED);
+
+	    bar.add(prompt);
+	    bar.add(searchPromptLabel); // this ispdated label
+	    bar.add(field);
+
+	    return bar;
 	}
 	
 	private JPanel buildStatCards(List<Exoplanet> planets) {
