@@ -1,0 +1,51 @@
+package GUI;
+
+// for host search
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
+import model.Exoplanet;
+import logic.QueryEngine;
+
+public class HostStarSearchWindow {
+
+    private JFrame window;
+    private List<Exoplanet> planets;
+
+    public HostStarSearchWindow(List<Exoplanet> planets){
+        this.planets = planets;
+        buildWindow();
+    }
+
+    private void buildWindow(){
+        window = new JFrame("Search by Host Star");
+        window.setSize(500,400);
+        window.setLocationRelativeTo(null);
+        window.setLayout(new BorderLayout());
+
+        QueryEngine qe = new QueryEngine(planets);
+
+        JTextField field = new JTextField();
+        JTextArea resultsArea = new JTextArea();
+        resultsArea.setEditable(false);
+
+        field.addActionListener(e -> {
+            String query = field.getText().trim();
+            List<Exoplanet> results = qe.filterByHostStar(query);
+
+            resultsArea.setText("");
+            for(Exoplanet p : results){
+                resultsArea.append(p.toString() + "\n\n");
+            }
+        });
+
+        window.add(new JLabel("Enter Host Star:"), BorderLayout.NORTH);
+        window.add(field, BorderLayout.CENTER);
+        window.add(new JScrollPane(resultsArea), BorderLayout.SOUTH);
+    }
+
+    public void show(){
+        window.setVisible(true);
+    }
+}
