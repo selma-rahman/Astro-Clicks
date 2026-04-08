@@ -257,25 +257,31 @@ public class MainWindow{
 		
 		// main area
 	private JPanel buildMain(List<Exoplanet> planets) {
-		JPanel main = new JPanel();
-		main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
-		main.setBackground(BG_BASE);
-		main.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-		main.setOpaque(false); // let the star field show through
-	
-		JPanel resultsContainer = new JPanel();
-		resultsContainer.setLayout(new BoxLayout(resultsContainer, BoxLayout.Y_AXIS));
-		resultsContainer.setOpaque(false);
-		
-		resultsContainer.add(buildResultsHeader()); 
-		main.add(buildSearchBar(planets, resultsContainer));
-		main.add(Box.createVerticalStrut(12));
-		main.add(buildStatCards(planets));
-		main.add(Box.createVerticalStrut(12));
-		main.add(Box.createVerticalStrut(8));
-		main.add(resultsContainer);
-			
-		return main;
+	    JPanel main = new JPanel();
+	    main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
+	    main.setBackground(BG_BASE);
+	    main.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+	    main.setOpaque(false);
+
+	    JPanel resultsSection = new JPanel();
+	    resultsSection.setLayout(new BoxLayout(resultsSection, BoxLayout.Y_AXIS));
+	    resultsSection.setOpaque(false);
+
+	    JPanel resultsBody = new JPanel();
+	    resultsBody.setLayout(new BoxLayout(resultsBody, BoxLayout.Y_AXIS));
+	    resultsBody.setOpaque(false);
+
+	    resultsSection.add(buildResultsHeader());
+	    resultsSection.add(Box.createVerticalStrut(6));
+	    resultsSection.add(resultsBody);
+
+	    main.add(buildSearchBar(planets, resultsBody));
+	    main.add(Box.createVerticalStrut(12));
+	    main.add(buildStatCards(planets));
+	    main.add(Box.createVerticalStrut(12));
+	    main.add(resultsSection);
+
+	    return main;
 	}
 	
 	// search bar top of main area
@@ -338,61 +344,14 @@ public class MainWindow{
 	            String query = field.getText();
 	            field.setText("");
 
-	            List<Exoplanet> results;
-
-	            switch(currentSearchType) {
-	                case "PLANET NAME":
-	                    results = qe.filterByName(query);
-	                    break;
-	                case "HOST STAR":
-	                    results = qe.filterByHostStar(query);
-	                    break;
-	                case "METHOD":
-	                    results = qe.filterByDiscoveryMethod(query);
-	                    break;
-	                case "RADIUS / MASS":
-	                    String[] parts = query.split(",");
-	                    double min = Double.parseDouble(parts[0].trim());
-	                    double max = Double.parseDouble(parts[1].trim());
-	                    results = qe.filterByRadius(min, max); // or mass depending on implementation
-	                    break;
-	                case "ORBIT PERIOD":
-	                    parts = query.split(",");
-	                    min = Double.parseDouble(parts[0].trim());
-	                    max = Double.parseDouble(parts[1].trim());
-	                    results = qe.filterByOrbitalPeriod(min, max);
-	                    break;
-	                case "YEAR":
-	                    int year = Integer.parseInt(query.trim());
-	                    results = qe.filterByYear(year);
-	                    break;
-	                default:
-	                    results = qe.filterByName(query);
-	            }
-
-	            // update results count
+	            List<Exoplanet> results = qe.filterByName(query);
 	            resultsCountLabel.setText(Integer.toString(results.size()));
 
 	            rc.removeAll();
+
 	            JScrollPane scrollPane = new JScrollPane(buildResults(results));
 	            scrollPane.setOpaque(false);
 	            scrollPane.getViewport().setOpaque(false);
-
-	            scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
-	                @Override
-	                protected void configureScrollBarColors() {
-	                    this.thumbColor = COL_BORDER;
-	                    this.trackColor = BG_CARD;
-	                }
-	            });
-
-	            scrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
-	                @Override
-	                protected void configureScrollBarColors() {
-	                    this.thumbColor = COL_BORDER;
-	                    this.trackColor = BG_CARD;
-	                }
-	            });
 
 	            rc.add(scrollPane);
 	            rc.revalidate();
@@ -404,18 +363,16 @@ public class MainWindow{
 	    bar.setBorder(BorderFactory.createLineBorder(COL_BORDER, 3));
 	    bar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
 
-	    // small arrow prompt
 	    JLabel prompt = new JLabel("?");
 	    prompt.setFont(pixelFontSm);
 	    prompt.setForeground(COL_BORDER);
 
-	    // this is now the class field so we can update dynamically
-	    searchPromptLabel = new JLabel("ENTER PLANET NAME:");
-	    searchPromptLabel.setFont(pixelFontXs);
-	    searchPromptLabel.setForeground(COL_MUTED);
+	    JLabel text = new JLabel("ENTER PLANET NAME:");
+	    text.setFont(pixelFontXs);
+	    text.setForeground(COL_MUTED);
 
 	    bar.add(prompt);
-	    bar.add(searchPromptLabel); // this ispdated label
+	    bar.add(text);
 	    bar.add(field);
 
 	    return bar;
