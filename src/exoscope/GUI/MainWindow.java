@@ -284,23 +284,22 @@ public class MainWindow{
 		
 		
 		
-		row.add(statCard("PLANETS LOADED",planets.size(), COL_TEXT));
-		
-		
-		// connects to actionperformed to reset count for each search
-		JPanel resultsCard = statCard("RESULTS FOUND",planets.size(), COL_GREEN);
+		// PLANETS LOADED stays number
+		row.add(statCard("PLANETS LOADED", Integer.toString(planets.size()), COL_TEXT));
+
+		// RESULTS FOUND → placeholder
+		JPanel resultsCard = statCard("RESULTS FOUND", "...", COL_GREEN);
 		this.resultsCountLabel = (JLabel) resultsCard.getComponent(1);
 		row.add(resultsCard);
-		
-		
-		row.add(statCard("PAGE", 67, COL_TEXT));
-		
+
+		// PAGE
+		row.add(statCard("PAGE", "67", COL_TEXT));		
 		
 		return row;
 	}
 	
 	// single stat box
-	private JPanel statCard(String label, int value, Color valueColor) {
+	private JPanel statCard(String label, String value, Color valueColor) {
 		JPanel card = new JPanel();
 		card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
 		card.setBackground(BG_PANEL);;
@@ -311,8 +310,7 @@ public class MainWindow{
 		lbl.setForeground(COL_BORDER);
 		lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
 		
-		String v = Integer.toString(value);
-		JLabel val = new JLabel(v);
+		JLabel val = new JLabel(value);
 		val.setFont(pixelFont);
         val.setForeground(valueColor);
         val.setAlignmentX(Component.LEFT_ALIGNMENT);
