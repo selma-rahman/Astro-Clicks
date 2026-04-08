@@ -225,41 +225,23 @@ public class MainWindow{
 	    item.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
 	    item.addMouseListener(new MouseAdapter() {
-	        @Override
-	        public void mouseClicked(MouseEvent e) {
+	    	@Override
+	    	public void mouseClicked(MouseEvent e) {
+	    		currentSearchType = text; // this tells the main search bar which type to search
+	    		if (searchPromptLabel != null) {
+	    		searchPromptLabel.setText("ENTER " + currentSearchType + ":");
+	    	}
+	    	// to refresh sidebar 
+	    	window.remove(sidebar);
+	    	sidebar = buildSidebar();
+	    	window.add(sidebar, BorderLayout.WEST);
+	    	window.revalidate();
+	    	window.repaint();
+	    }
+	 });
 
-	            // 🔥 if DISC. METHODS → open webpage and EXIT
-	            if (text.equals("DISC. METHODS")) {
-	                try {
-	                    if (Desktop.isDesktopSupported()) {
-	                        Desktop.getDesktop().browse(
-	                            new URI("https://science.nasa.gov/exoplanets/how-we-find-and-characterize/")
-	                        );
-	                    }
-	                } catch (Exception ex) {
-	                    ex.printStackTrace();
-	                }
-	                return; // ⛔ VERY IMPORTANT → stop rest of code
-	            }
-
-	            // normal behavior for other sidebar items
-	            currentSearchType = text;
-
-	            if (searchPromptLabel != null) {
-	                searchPromptLabel.setText("ENTER " + currentSearchType + ":");
-	            }
-
-	            // refresh sidebar
-	            window.remove(sidebar);
-	            sidebar = buildSidebar();
-	            window.add(sidebar, BorderLayout.WEST);
-	            window.revalidate();
-	            window.repaint();
-	        }
-	    });
-
-	    return item;
-	}
+	 return item;
+}
 	
 	private JLabel sidebarSection(String text) {
 		JLabel l = new JLabel(text);
@@ -349,49 +331,90 @@ public class MainWindow{
 		});
 		*/
 	private JPanel buildSearchBar(List<Exoplanet> planets, JPanel rc) {
-	    QueryEngine qe = new QueryEngine(planets);
-	    JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 6));
-	    JTextField field = new JTextField(20);
+		QueryEngine qe = new QueryEngine(planets);JPanel bar = new 
+		JPanel(new FlowLayout(FlowLayout.LEFT, 15, 6));
+		JTextField field = new JTextField(20);
+		field.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String query = field.getText();
+				field.setText("");
 
-	    field.addActionListener(new ActionListener() {
-	        @Override
-	        public void actionPerformed(ActionEvent e) {
-	            String query = field.getText();
-	            field.setText("");
+				List<Exoplanet> results;
 
-	            List<Exoplanet> results = qe.filterByName(query);
-	            resultsCountLabel.setText(Integer.toString(results.size()));
+				switch(currentSearchType) {
+					case "PLANET NAME":
+						results = qe.filterByName(query);
+						break;
+					case "HOST STAR":
+						results = qe.filterByHostStar(query);
+						break;
+					case "METHOD":
+						results = qe.filterByDiscoveryMethod(query);
+						break;
+					case "RADIUS / MASS":
+						String[] parts = query.split(",");
+						double min = Double.parseDouble(parts[0].trim());
+						double max = Double.parseDouble(parts[1].trim());
+						results = qe.filterByRadius(min, max); // or mass depending on implementation
+						break;
+					case "ORBIT PERIOD":
+						parts = query.split(",");
+						min = Double.parseDouble(parts[0].trim());
+						max = Double.parseDouble(parts[1].trim());
+						results = qe.filterByOrbitalPeriod(min, max);
+						break;
+					case "YEAR":
+						int year = Integer.parseInt(query.trim());
+						results = qe.filterByYear(year);
+						break;
+					default:
+						results = qe.filterByName(query);
+						}
+				// update results count
+					resultsCountLabel.setText(Integer.toString(results.size()));
+					rc.removeAll();
+					JScrollPane scrollPane = new JScrollPane(buildResults(results));
+					scrollPane.setOpaque(false);
+					scrollPane.getViewport().setOpaque(false);
+					scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+						@Override
+						protected void configureScrollBarColors() {
+							this.thumbColor = COL_BORDER;
+							this.trackColor = BG_CARD;}
+						});
+					scrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
+						@Override
+						protected void configureScrollBarColors() {
+							this.thumbColor = COL_BORDER;
+							this.trackColor = BG_CARD;
+							}
+						});
 
-	            rc.removeAll();
+					rc.add(scrollPane);
+					rc.revalidate();
+					rc.repaint(); }
+		});
 
-	            JScrollPane scrollPane = new JScrollPane(buildResults(results));
-	            scrollPane.setOpaque(false);
-	            scrollPane.getViewport().setOpaque(false);
+		bar.setBackground(BG_PANEL);
+		bar.setBorder(BorderFactory.createLineBorder(COL_BORDER, 3));
+		bar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+		
+		// small arrow prompt
+		JLabel prompt = new JLabel("?");
+		prompt.setFont(pixelFontSm);
+		prompt.setForeground(COL_BORDER);
 
-	            rc.add(scrollPane);
-	            rc.revalidate();
-	            rc.repaint();
-	        }
-	    });
+		// this is now the class field so we can update dynamically
+		searchPromptLabel = new JLabel("ENTER PLANET NAME:");
+		searchPromptLabel.setFont(pixelFontXs);
+		searchPromptLabel.setForeground(COL_MUTED);
+		bar.add(prompt);
+		bar.add(searchPromptLabel); // this ispdated label
+		bar.add(field);
 
-	    bar.setBackground(BG_PANEL);
-	    bar.setBorder(BorderFactory.createLineBorder(COL_BORDER, 3));
-	    bar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-
-	    JLabel prompt = new JLabel("?");
-	    prompt.setFont(pixelFontSm);
-	    prompt.setForeground(COL_BORDER);
-
-	    JLabel text = new JLabel("ENTER PLANET NAME:");
-	    text.setFont(pixelFontXs);
-	    text.setForeground(COL_MUTED);
-
-	    bar.add(prompt);
-	    bar.add(text);
-	    bar.add(field);
-
-	    return bar;
-	}
+		return bar;}
+	
 	
 	private JPanel buildStatCards(List<Exoplanet> planets) {
 		// 1 row 3 columns 8px horizontal gap, 0 vertical gap
