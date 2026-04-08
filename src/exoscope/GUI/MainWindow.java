@@ -10,6 +10,8 @@ import java.awt.event.*;
 import logic.QueryEngine;
 import model.Exoplanet;
 import java.util.List;
+import java.awt.Desktop;
+import java.net.URI;
 
 public class MainWindow{
 	// color palette, hex codes
@@ -226,15 +228,28 @@ public class MainWindow{
 	        @Override
 	        public void mouseClicked(MouseEvent e) {
 
-	            currentSearchType = text; // this tells the main search bar which type to search
-	            //window.getContentPane().remove(sidebar);
-	            //window.getContentPane().add(buildSidebar(), BorderLayout.WEST);
-	            // this kind of updates the search prompt 
+	            // 🔥 if DISC. METHODS → open webpage and EXIT
+	            if (text.equals("DISC. METHODS")) {
+	                try {
+	                    if (Desktop.isDesktopSupported()) {
+	                        Desktop.getDesktop().browse(
+	                            new URI("https://science.nasa.gov/exoplanets/how-we-find-and-characterize/")
+	                        );
+	                    }
+	                } catch (Exception ex) {
+	                    ex.printStackTrace();
+	                }
+	                return; // ⛔ VERY IMPORTANT → stop rest of code
+	            }
+
+	            // normal behavior for other sidebar items
+	            currentSearchType = text;
+
 	            if (searchPromptLabel != null) {
 	                searchPromptLabel.setText("ENTER " + currentSearchType + ":");
-	       
 	            }
-	            // to refresh sidebar 
+
+	            // refresh sidebar
 	            window.remove(sidebar);
 	            sidebar = buildSidebar();
 	            window.add(sidebar, BorderLayout.WEST);
