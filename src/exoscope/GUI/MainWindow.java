@@ -131,7 +131,6 @@ public class MainWindow{
 		cards.add(buildMain(this.planets), "STANDARD_SEARCH");
 		cards.add(radiusSearch,"RADIUS_PANEL");
 		cards.add(massSearch,"MASS_PANEL");
-		
 		root.add(cards, BorderLayout.CENTER);
 		
 		window.setContentPane(root);
