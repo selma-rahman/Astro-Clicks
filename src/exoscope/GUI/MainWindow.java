@@ -35,7 +35,20 @@ public class MainWindow{
 	
 	private JFrame window;
 	private JPanel sidebar;
+	
+	private JPanel main;
+	private JPanel infoHomePanel;
+	private JPanel infoDetailPanel;
+	
+	private JLabel detailTitleLabel;
+	private JTextArea detailTextArea;
+	private JLabel detailImageLabel;
 	private JLabel searchPromptLabel;
+	
+	private boolean infoMode = false;
+	
+	private JPanel centerPanel;
+	private CardLayout centerLayout;
 	
 	private JPanel cards;
 	private CardLayout cardLayout;
@@ -115,23 +128,35 @@ public class MainWindow{
 			    }
 			}
 		};
-		root.setBackground(BG_BASE);;
-		root.setBorder(BorderFactory.createLineBorder(COL_BORDER, 3));
-		root.add(buildTitleBar(), BorderLayout.NORTH);
-		root.add(buildSidebar(), BorderLayout.WEST);
-		//root.add(buildMain(this.planets), BorderLayout.CENTER);
-		cardLayout = new CardLayout();
-		cards = new JPanel(cardLayout);
-		cards.setOpaque(false);
-		
+				
+	    root.setBackground(BG_BASE);
+	    root.setBorder(BorderFactory.createLineBorder(COL_BORDER, 3));
+
+
+	    centerLayout = new CardLayout();
+	    centerPanel = new JPanel(centerLayout);
+	    centerPanel.setOpaque(false);
+
+	    main = buildMain(this.planets);
+	    infoHomePanel = buildInfoHome();
+	    infoDetailPanel = buildInfoDetail();
+
 		
 		RadiusSearchWindow radiusSearch = new RadiusSearchWindow(this, planets);
 		MassSearchWindow massSearch = new MassSearchWindow(this, planets);
 		
-		cards.add(buildMain(this.planets), "STANDARD_SEARCH");
-		cards.add(radiusSearch,"RADIUS_PANEL");
-		cards.add(massSearch,"MASS_PANEL");
-		root.add(cards, BorderLayout.CENTER);
+		
+		centerPanel.add(main, "MAIN");
+		centerPanel.add(infoHomePanel, "INFO_HOME");
+		centerPanel.add(infoDetailPanel,"INFO_DETAIL");
+		centerPanel.add(radiusSearch, "RADIUS_PANEL");
+		centerPanel.add(massSearch, "MASS_PANEL");
+		    
+		
+			
+		root.add(buildTitleBar(), BorderLayout.NORTH);
+	    root.add(buildSidebar(), BorderLayout.WEST);
+		root.add(centerPanel, BorderLayout.CENTER);
 		
 		window.setContentPane(root);
 	}
@@ -160,16 +185,6 @@ public class MainWindow{
 		sidebar.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 0, 3, COL_BORDER), BorderFactory.createEmptyBorder(14, 10, 14, 10)));
 		sidebar.setPreferredSize(new Dimension(200, 0));
 		
-		/*sidebar.add(sidebarSection("// SEARCH BY"));
-		sidebar.add(sidebarItem("PLANET NAME" , true));
-		sidebar.add(sidebarItem("HOST STAR", false));
-		sidebar.add(sidebarItem("METHOD", false));
-		sidebar.add(sidebarItem("RADIUS / MASS", false));
-		sidebar.add(sidebarItem("ORBIT PERIOD", false));
-		sidebar.add(sidebarItem("YEAR", false));
-		sidebar.add(Box.createVerticalStrut(6));
-		sidebar.add(sidebarSection("// INFO"));
-		sidebar.add(sidebarItem("DISC. METHODS", false)); */
 		sidebar.add(sidebarSection("// SEARCH BY"));
 		sidebar.add(sidebarItem("PLANET NAME", currentSearchType.equals("PLANET NAME")));
 		sidebar.add(sidebarItem("HOST STAR", currentSearchType.equals("HOST STAR")));
@@ -180,42 +195,369 @@ public class MainWindow{
 		sidebar.add(sidebarItem("YEAR", currentSearchType.equals("YEAR")));
 		sidebar.add(Box.createVerticalStrut(6));
 		sidebar.add(sidebarSection("// INFO"));
-		sidebar.add(sidebarItem("DISC. METHODS", false));
+		sidebar.add(Info(infoMode));
 		
 		return sidebar;
 	}
-		
-	/* private JPanel sidebarItem(String text, boolean active) {
-		JPanel item = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 5));
-		item.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
-		item.setAlignmentX(Component.LEFT_ALIGNMENT);
-		
-		if (active) {
-			item.setBackground(BG_CARD);
-			item.setBorder(BorderFactory.createLineBorder(COL_BORDER, 2));
-		} else {
-			item.setBackground(BG_PANEL);
-			item.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-		}
-
-		JLabel arrow = new JLabel(active ? "\u25BA" : "  ");
-		arrow.setFont(pixelFontXs);
-		arrow.setForeground(COL_BORDER);
-
-		JLabel label = new JLabel(text);
-		label.setFont(pixelFontXs);
-		label.setForeground(active ? COL_TEXT : COL_MUTED);
-
-		 item.add(arrow);
-		 item.add(label);
-		 return item;
-	} */
 	
+	private JPanel Info(boolean active) {
+	    JPanel item = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 5));
+	    item.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
+	    item.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+	    if (active) {
+	        item.setBackground(BG_CARD);
+	        item.setBorder(BorderFactory.createLineBorder(COL_BORDER, 2));
+	    } else {
+	        item.setBackground(BG_PANEL);
+	        item.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+	    }
+
+	    JLabel arrow = new JLabel(active ? "\u25BA" : "  ");
+	    arrow.setFont(pixelFontXs);
+	    arrow.setForeground(COL_BORDER);
+
+	    JLabel label = new JLabel("DISC. METHOD");
+	    label.setFont(pixelFontXs);
+	    label.setForeground(active ? COL_TEXT : COL_MUTED);
+
+	    item.add(arrow);
+	    item.add(label);
+	    item.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+	    item.addMouseListener(new MouseAdapter() {
+	        @Override
+	        public void mouseClicked(MouseEvent e) {
+	        	infoMode = true;
+	            centerLayout.show(centerPanel, "INFO_HOME");
+
+	            window.remove(sidebar);
+	            sidebar = buildSidebar();
+	            window.add(sidebar, BorderLayout.WEST);
+
+	            window.revalidate();
+	            window.repaint();
+	        }
+	    });
+
+	    return item;
+	}
+	
+	private JPanel buildInfo() {
+	    JPanel mainInfo = new JPanel();
+	    mainInfo.setLayout(new BoxLayout(mainInfo, BoxLayout.Y_AXIS));
+	    mainInfo.setBackground(BG_BASE);
+	    mainInfo.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+	    mainInfo.setOpaque(false);
+
+	    JLabel title = new JLabel("EXOSCOPE INFO");
+	    title.setFont(pixelFontSm);
+	    title.setForeground(COL_ACCENT);
+	    title.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+	    JTextArea textArea = new JTextArea();
+	    textArea.setText(
+	        "Welcome to EXOSCOPE.\n\n" +
+	        "This program allows you to search exoplanets by:\n" +
+	        "- Planet Name\n" +
+	        "- Host Star\n" +
+	        "- Discovery Method\n" +
+	        "- Radius / Mass\n" +
+	        "- Orbit Period\n" +
+	        "- Year\n\n" +
+	        "Use the sidebar to switch search modes."
+	    );
+	    textArea.setFont(pixelFontXs);
+	    textArea.setForeground(COL_TEXT);
+	    textArea.setBackground(BG_PANEL);
+	    textArea.setCaretColor(COL_TEXT);
+	    textArea.setEditable(false);
+	    textArea.setLineWrap(true);
+	    textArea.setWrapStyleWord(true);
+	    textArea.setBorder(BorderFactory.createCompoundBorder(
+	        BorderFactory.createLineBorder(COL_BORDER, 2),
+	        BorderFactory.createEmptyBorder(10, 10, 10, 10)
+	    ));
+	    textArea.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+	    mainInfo.add(title);
+	    mainInfo.add(Box.createVerticalStrut(10));
+	    mainInfo.add(textArea);
+
+	    return mainInfo;
+	}
+	
+	private JPanel buildInfoHome() {
+	    JPanel page = new JPanel(new BorderLayout());
+	    page.setBackground(BG_BASE);
+	    page.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+	    page.setOpaque(false);
+
+	    JPanel top = new JPanel(new BorderLayout());
+	    top.setOpaque(false);
+
+	    JButton backButton = retroButton("<< back to search");
+	    backButton.addActionListener(e -> {
+	        infoMode = false;
+	        centerLayout.show(centerPanel, "MAIN");
+
+	        window.remove(sidebar);
+	        sidebar = buildSidebar();
+	        window.add(sidebar, BorderLayout.WEST);
+
+	        window.revalidate();
+	        window.repaint();
+	    });
+
+	    JLabel title = new JLabel("DISCOVERY METHODS", SwingConstants.CENTER);
+	    title.setFont(pixelFontSm);
+	    title.setForeground(COL_ACCENT);
+
+	    JPanel rightTop = new JPanel();
+	    rightTop.setOpaque(false);
+	    rightTop.setLayout(new BoxLayout(rightTop, BoxLayout.Y_AXIS));
+
+	    JLabel infoLabel = new JLabel("info found on");
+	    infoLabel.setFont(pixelFontXs);
+	    infoLabel.setForeground(COL_TEXT);
+
+	    JLabel nasaLink = new JLabel("<html><u>NASA.gov</u></html>");
+	    nasaLink.setFont(pixelFontXs);
+	    nasaLink.setForeground(COL_ACCENT);
+	    nasaLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
+	    nasaLink.addMouseListener(new MouseAdapter() {
+	        @Override
+	        public void mouseClicked(MouseEvent e) {
+	            openLink("https://science.nasa.gov/exoplanets/how-we-find-and-characterize/");
+	        }
+	    });
+
+	    rightTop.add(infoLabel);
+	    rightTop.add(nasaLink);
+
+	    top.add(backButton, BorderLayout.WEST);
+	    top.add(title, BorderLayout.CENTER);
+	    top.add(rightTop, BorderLayout.EAST);
+
+	    JPanel grid = new JPanel(new GridLayout(2, 3, 24, 24));
+	    grid.setOpaque(false);
+	    grid.setBorder(BorderFactory.createEmptyBorder(30, 40, 0, 40));
+
+	    grid.add(createMethodCard(
+	        "RADIAL\nVELOCITY",
+	        "images/radial_velocity.png",
+	        "Radial Velocity",
+	        "Radial velocity detects exoplanets by measuring the tiny wobble of a star caused by the gravitational pull of an orbiting planet. Scientists observe shifts in the star's spectrum due to the Doppler effect."
+	    ));
+
+	    grid.add(createMethodCard(
+	        "TRANSITS",
+	        "images/transits.png",
+	        "Transits",
+	        "The transit method detects planets when they pass in front of their host star from our point of view. This causes a slight dip in the star's brightness. Repeated dips can reveal a planet's size and orbit."
+	    ));
+
+	    grid.add(createMethodCard(
+	        "GRAVITATIONAL\nMICROLENSING",
+	        "images/microlensing.png",
+	        "Gravitational Microlensing",
+	        "Microlensing happens when a foreground star bends and magnifies the light of a background star. A planet orbiting the foreground star can create an extra signal in that magnification pattern."
+	    ));
+
+	    grid.add(createMethodCard(
+	        "DIRECT\nIMAGING",
+	        "images/direct_imaging.png",
+	        "Direct Imaging",
+	        "Direct imaging captures actual pictures of exoplanets by blocking out the bright light from their host stars. This is most effective for large planets far from their stars."
+	    ));
+
+	    grid.add(createMethodCard(
+	        "CORONAGRAPH",
+	        "images/coronagraph.png",
+	        "Coronagraph",
+	        "A coronagraph is an instrument used to block a star's light so nearby faint objects, like exoplanets, can be observed more clearly."
+	    ));
+
+	    grid.add(createMethodCard(
+	        "STARSHADE",
+	        "images/starshade.png",
+	        "Starshade",
+	        "A starshade is a large spacecraft positioned far from a telescope to block starlight before it enters the telescope, helping scientists directly observe exoplanets."
+	    ));
+
+	    page.add(top, BorderLayout.NORTH);
+	    page.add(grid, BorderLayout.CENTER);
+
+	    return page;
+	}
+	
+	private JPanel createMethodCard(String displayTitle, String imagePath, String detailTitle, String detailText) {
+	    JPanel card = new JPanel();
+	    card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+	    card.setBackground(BG_PANEL);
+	    card.setBorder(BorderFactory.createLineBorder(COL_BORDER, 2));
+	    card.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+	    JLabel title = new JLabel("<html>" + displayTitle.replace("\n", "<br>") + "</html>");
+	    title.setFont(pixelFontSm);
+	    title.setForeground(COL_ACCENT);
+	    title.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    title.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+	    JLabel imageLabel = buildCardImageLabel(imagePath);
+	    imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+	    card.add(Box.createVerticalStrut(10));
+	    card.add(title);
+	    card.add(Box.createVerticalGlue());
+	    card.add(imageLabel);
+	    card.add(Box.createVerticalStrut(20));
+
+	    MouseAdapter clicker = new MouseAdapter() {
+	        @Override
+	        public void mouseClicked(MouseEvent e) {
+	            showMethodDetail(detailTitle, detailText, imagePath);
+	        }
+
+	        @Override
+	        public void mouseEntered(MouseEvent e) {
+	            card.setBorder(BorderFactory.createLineBorder(COL_ACCENT, 3));
+	            card.setBackground(BG_CARD);
+	        }
+
+	        @Override
+	        public void mouseExited(MouseEvent e) {
+	            card.setBorder(BorderFactory.createLineBorder(COL_BORDER, 2));
+	            card.setBackground(BG_PANEL);
+	        }
+	    };
+
+	    card.addMouseListener(clicker);
+	    title.addMouseListener(clicker);
+	    imageLabel.addMouseListener(clicker);
+
+	    return card;
+	}
+	
+	private JLabel buildCardImageLabel(String imagePath) {
+	    java.net.URL url = getClass().getResource(imagePath);
+
+	    if (url != null) {
+	        ImageIcon icon = new ImageIcon(url);
+	        Image scaled = icon.getImage().getScaledInstance(110, 80, Image.SCALE_SMOOTH);
+	        return new JLabel(new ImageIcon(scaled));
+	    }
+
+	    JLabel placeholder = new JLabel("image");
+	    placeholder.setPreferredSize(new Dimension(110, 80));
+	    placeholder.setMaximumSize(new Dimension(110, 80));
+	    placeholder.setHorizontalAlignment(SwingConstants.CENTER);
+	    placeholder.setVerticalAlignment(SwingConstants.CENTER);
+	    placeholder.setFont(pixelFontXs);
+	    placeholder.setForeground(COL_TEXT);
+	    placeholder.setBorder(BorderFactory.createLineBorder(new Color(0xff, 0x99, 0xdd), 2));
+	    return placeholder;
+	}
+	
+	private JPanel buildInfoDetail() {
+	    JPanel page = new JPanel(new BorderLayout());
+	    page.setBackground(BG_BASE);
+	    page.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+	    page.setOpaque(false);
+
+	    JButton backButton = retroButton("<< back to methods");
+	    backButton.addActionListener(e -> centerLayout.show(centerPanel, "INFO_HOME"));
+
+	    detailTitleLabel = new JLabel("METHOD TITLE");
+	    detailTitleLabel.setFont(pixelFontSm);
+	    detailTitleLabel.setForeground(COL_ACCENT);
+
+	    JPanel top = new JPanel(new BorderLayout());
+	    top.setOpaque(false);
+	    top.add(backButton, BorderLayout.WEST);
+	    top.add(detailTitleLabel, BorderLayout.CENTER);
+
+	    detailImageLabel = new JLabel();
+	    detailImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+	    detailTextArea = new JTextArea();
+	    detailTextArea.setEditable(false);
+	    detailTextArea.setLineWrap(true);
+	    detailTextArea.setWrapStyleWord(true);
+	    detailTextArea.setFont(pixelFontXs);
+	    detailTextArea.setForeground(COL_TEXT);
+	    detailTextArea.setBackground(BG_PANEL);
+	    detailTextArea.setBorder(BorderFactory.createCompoundBorder(
+	        BorderFactory.createLineBorder(COL_BORDER, 2),
+	        BorderFactory.createEmptyBorder(12, 12, 12, 12)
+	    ));
+
+	    JPanel center = new JPanel();
+	    center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
+	    center.setOpaque(false);
+
+	    detailImageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    detailTextArea.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+	    center.add(Box.createVerticalStrut(20));
+	    center.add(detailImageLabel);
+	    center.add(Box.createVerticalStrut(20));
+	    center.add(detailTextArea);
+
+	    page.add(top, BorderLayout.NORTH);
+	    page.add(center, BorderLayout.CENTER);
+
+	    return page;
+	}
+	
+	private void showMethodDetail(String title, String text, String imagePath) {
+	    detailTitleLabel.setText(title);
+	    detailTextArea.setText(text);
+
+	    java.net.URL url = getClass().getResource(imagePath);
+	    if (url != null) {
+	        ImageIcon icon = new ImageIcon(url);
+	        Image scaled = icon.getImage().getScaledInstance(240, 180, Image.SCALE_SMOOTH);
+	        detailImageLabel.setIcon(new ImageIcon(scaled));
+	        detailImageLabel.setText("");
+	    } else {
+	        detailImageLabel.setIcon(null);
+	        detailImageLabel.setText("[ image not found ]");
+	        detailImageLabel.setForeground(COL_TEXT);
+	        detailImageLabel.setFont(pixelFontSm);
+	    }
+
+	    centerLayout.show(centerPanel, "INFO_DETAIL");
+	}
+	
+	private JButton retroButton(String text) {
+	    JButton btn = new JButton(text);
+	    btn.setFont(pixelFontXs);
+	    btn.setForeground(COL_TEXT);
+	    btn.setBackground(BG_CARD);
+	    btn.setFocusPainted(false);
+	    btn.setBorder(BorderFactory.createLineBorder(COL_BORDER, 2));
+	    btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+	    return btn;
+	}
+	
+	private void openLink(String url) {
+	    try {
+	        if (Desktop.isDesktopSupported()) {
+	            Desktop.getDesktop().browse(new URI(url));
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
 	private JPanel sidebarItem(String text, boolean active) {
 
 	    JPanel item = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 5));
 	    item.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
 	    item.setAlignmentX(Component.LEFT_ALIGNMENT);
+	  
+	   
 
 	    if (active) {
 	        item.setBackground(BG_CARD);
@@ -243,18 +585,22 @@ public class MainWindow{
 	    	@Override
 	    	public void mouseClicked(MouseEvent e) {
 	    		currentSearchType = text; // this tells the main search bar which type to search
-	    		
-	    		if (text.equals("RADIUS")) {
-	    			cardLayout.show(cards, "RADIUS_PANEL");
-	    		} else if (text.equals("MASS")){
-	    			cardLayout.show(cards,  "MASS_PANEL");
-	    		} else {
-	    			cardLayout.show(cards, "STANDARD_SEARCH");
-	    		}
+	    		infoMode = false;
+	    	
 	    		
 	    		if (searchPromptLabel != null) {
 	    		searchPromptLabel.setText("ENTER " + currentSearchType + ":");
-	    	}
+	    		}
+	    		
+	    		if (text.equals("RADIUS")) {
+	    			centerLayout.show(centerPanel, "RADIUS_PANEL");
+	    		} else if (text.equals("MASS")){
+	    			centerLayout.show(centerPanel,  "MASS_PANEL");
+	    		} else {
+	    			centerLayout.show(centerPanel, "MAIN");
+	    		}
+	    		
+	    	
 	    	// to refresh sidebar 
 	    	window.remove(sidebar);
 	    	sidebar = buildSidebar();
@@ -305,55 +651,6 @@ public class MainWindow{
 	    return main;
 	}
 	
-	// search bar top of main area
-	// need to replace this jtextfield 
-	/*private JPanel buildSearchBar(List<Exoplanet> planets, JPanel rc) {
-		QueryEngine qe = new QueryEngine(planets);
-		JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 6));
-		JTextField field = new JTextField(20);
-		
-		field.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String query = field.getText();
-				field.setText("");
-				// here we will need to consider discrimination between search buttons
-				List<Exoplanet> results = qe.filterByName(query);
-				
-				// reset result count for each search
-				resultsCountLabel.setText(Integer.toString(results.size()));	
-				
-				rc.removeAll();
-				
-				JScrollPane scrollPane = new JScrollPane(buildResults(results));
-				scrollPane.setOpaque(false);
-				scrollPane.getViewport().setOpaque(false);
-				
-				
-				scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
-					@Override
-					protected void configureScrollBarColors() {
-						this.thumbColor = COL_BORDER;
-						this.trackColor = BG_CARD;
-					}
-				});
-				
-				scrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
-					@Override
-					protected void configureScrollBarColors() {
-						this.thumbColor = COL_BORDER;
-						this.trackColor = BG_CARD;
-					}
-				});
-	
-				rc.add(scrollPane);
-				
-				rc.revalidate();
-				rc.repaint();
-				
-			}
-		});
-		*/
 	private JPanel buildSearchBar(List<Exoplanet> planets, JPanel rc) {
 		QueryEngine qe = new QueryEngine(planets);
 		JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 6));
@@ -583,48 +880,3 @@ public class MainWindow{
 		
 
 	}
-	
-	/*
-
-	private JFrame window;
-	
-	public MainWindow() {
-		window = new JFrame();
-		window.setTitle("Welcome to Exoscope");
-		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		window.setSize(800,500);
-		window.setLocationRelativeTo(null);
-		window.setLayout(new BorderLayout());
-				
-		JPanel panel1 = new JPanel();
-		panel1.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
-		
-		panel1.setBackground(Color.PINK);
-				
-		panel1.setPreferredSize(new Dimension(200,200));
-		
-		JLabel label = new JLabel("Begin");
-		label.setForeground(Color.WHITE);
-		label.setFont(new Font("Serif", Font.BOLD, 36));
-
-		
-		window.add(panel1, BorderLayout.SOUTH);
-		panel1.add(label, BorderLayout.NORTH);
-		
-		JButton button2 = new JButton("Update Label Text");
-		button2.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				label.setText("End");
-			}
-		});
-		
-		panel1.add(button2);
-		
-	}
-	
-	public void show() {
-		window.setVisible(true);
-	}
-	*/
-
