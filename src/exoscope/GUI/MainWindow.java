@@ -18,24 +18,27 @@ public class MainWindow{
 	// BG = background
 	// COL = foreground/accent colors
 	
-	private static final Color BG_BASE = new Color(0x05, 0x05, 0x10); // black navy ish
-	private static final Color BG_PANEL = new Color(0x07, 0x07, 0x18); // lighter, for sidebar and cards
+	public static final Color BG_BASE = new Color(0x05, 0x05, 0x10); // black navy ish
+	public static final Color BG_PANEL = new Color(0x07, 0x07, 0x18); // lighter, for sidebar and cards
 	private static final Color BG_CARD = new Color(0x0a, 0x0a, 0x2a); // active or highlight stuff
-	private static final Color COL_BORDER = new Color(0x3a, 0x3a, 0xff); // bright blue/purple for borders
-	private static final Color COL_TEXT = new Color(0xe0, 0xe0, 0xff); // softer white/blue for main text color
-	private static final Color COL_MUTED = new Color(0x5a, 0x5a, 0x9a); // dimmer purple/grey for inactive items
+	public static final Color COL_BORDER = new Color(0x3a, 0x3a, 0xff); // bright blue/purple for borders
+	public static final Color COL_TEXT = new Color(0xe0, 0xe0, 0xff); // softer white/blue for main text color
+	public static final Color COL_MUTED = new Color(0x5a, 0x5a, 0x9a); // dimmer purple/grey for inactive items
 	private static final Color COL_ACCENT = new Color(0x7b, 0x7b, 0xff); // blue/purple for titles and things to be highlights
 	private static final Color COL_GREEN = new Color(0x00, 0xff, 0x88); // neon green, for the result count
 	
 	private String currentSearchType = "PLANET NAME"; // default search
 	
 	private Font pixelFont; // large
-	private Font pixelFontSm; // medium
-	private Font pixelFontXs; // small
+	public Font pixelFontSm; // medium
+	public Font pixelFontXs; // small
 	
 	private JFrame window;
 	private JPanel sidebar;
 	private JLabel searchPromptLabel;
+	
+	private JPanel cards;
+	private CardLayout cardLayout;
 	
 	
 	private JLabel resultsCountLabel = new JLabel("0");;
@@ -116,10 +119,22 @@ public class MainWindow{
 		root.setBorder(BorderFactory.createLineBorder(COL_BORDER, 3));
 		root.add(buildTitleBar(), BorderLayout.NORTH);
 		root.add(buildSidebar(), BorderLayout.WEST);
-		//root.add(buildMain(planets), BorderLayout.CENTER);
-		root.add(buildMain(this.planets), BorderLayout.CENTER);
+		//root.add(buildMain(this.planets), BorderLayout.CENTER);
+		cardLayout = new CardLayout();
+		cards = new JPanel(cardLayout);
+		cards.setOpaque(false);
 		
-		window.setContentPane(root);;
+		
+		RadiusSearchWindow radiusSearch = new RadiusSearchWindow(this, planets);
+		MassSearchWindow massSearch = new MassSearchWindow(this, planets);
+		
+		cards.add(buildMain(this.planets), "STANDARD_SEARCH");
+		cards.add(radiusSearch,"RADIUS_PANEL");
+		cards.add(massSearch,"MASS_PANEL");
+		
+		root.add(cards, BorderLayout.CENTER);
+		
+		window.setContentPane(root);
 	}
 		
 		// title bar
@@ -160,7 +175,8 @@ public class MainWindow{
 		sidebar.add(sidebarItem("PLANET NAME", currentSearchType.equals("PLANET NAME")));
 		sidebar.add(sidebarItem("HOST STAR", currentSearchType.equals("HOST STAR")));
 		sidebar.add(sidebarItem("METHOD", currentSearchType.equals("METHOD")));
-		sidebar.add(sidebarItem("RADIUS / MASS", currentSearchType.equals("RADIUS / MASS")));
+		sidebar.add(sidebarItem("RADIUS", currentSearchType.equals("RADIUS")));
+		sidebar.add(sidebarItem("MASS", currentSearchType.equals("MASS")));
 		sidebar.add(sidebarItem("ORBIT PERIOD", currentSearchType.equals("ORBIT PERIOD")));
 		sidebar.add(sidebarItem("YEAR", currentSearchType.equals("YEAR")));
 		sidebar.add(Box.createVerticalStrut(6));
@@ -228,6 +244,15 @@ public class MainWindow{
 	    	@Override
 	    	public void mouseClicked(MouseEvent e) {
 	    		currentSearchType = text; // this tells the main search bar which type to search
+	    		
+	    		if (text.equals("RADIUS")) {
+	    			cardLayout.show(cards, "RADIUS_PANEL");
+	    		} else if (text.equals("MASS")){
+	    			cardLayout.show(cards,  "MASS_PANEL");
+	    		} else {
+	    			cardLayout.show(cards, "STANDARD_SEARCH");
+	    		}
+	    		
 	    		if (searchPromptLabel != null) {
 	    		searchPromptLabel.setText("ENTER " + currentSearchType + ":");
 	    	}
@@ -331,8 +356,8 @@ public class MainWindow{
 		});
 		*/
 	private JPanel buildSearchBar(List<Exoplanet> planets, JPanel rc) {
-		QueryEngine qe = new QueryEngine(planets);JPanel bar = new 
-		JPanel(new FlowLayout(FlowLayout.LEFT, 15, 6));
+		QueryEngine qe = new QueryEngine(planets);
+		JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 6));
 		JTextField field = new JTextField(20);
 		field.addActionListener(new ActionListener() {
 			@Override
@@ -352,11 +377,17 @@ public class MainWindow{
 					case "METHOD":
 						results = qe.filterByDiscoveryMethod(query);
 						break;
-					case "RADIUS / MASS":
+					case "RADIUS":
 						String[] parts = query.split(",");
 						double min = Double.parseDouble(parts[0].trim());
 						double max = Double.parseDouble(parts[1].trim());
 						results = qe.filterByRadius(min, max); // or mass depending on implementation
+						break;
+					case "MASS":
+						String[] parts2 = query.split(", ");
+						double min2 = Double.parseDouble(parts2[0].trim());
+						double max2 = Double.parseDouble(parts2[1].trim());
+						results = qe.filterByMass(min2, max2);
 						break;
 					case "ORBIT PERIOD":
 						parts = query.split(",");
@@ -375,21 +406,7 @@ public class MainWindow{
 					resultsCountLabel.setText(Integer.toString(results.size()));
 					rc.removeAll();
 					JScrollPane scrollPane = new JScrollPane(buildResults(results));
-					scrollPane.setOpaque(false);
-					scrollPane.getViewport().setOpaque(false);
-					scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
-						@Override
-						protected void configureScrollBarColors() {
-							this.thumbColor = COL_BORDER;
-							this.trackColor = BG_CARD;}
-						});
-					scrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
-						@Override
-						protected void configureScrollBarColors() {
-							this.thumbColor = COL_BORDER;
-							this.trackColor = BG_CARD;
-							}
-						});
+					styleScrollPane(scrollPane);
 
 					rc.add(scrollPane);
 					rc.revalidate();
@@ -416,7 +433,7 @@ public class MainWindow{
 		return bar;}
 	
 	
-	private JPanel buildStatCards(List<Exoplanet> planets) {
+	public JPanel buildStatCards(List<Exoplanet> planets) {
 		// 1 row 3 columns 8px horizontal gap, 0 vertical gap
 		JPanel row = new JPanel(new GridLayout(1, 3, 8, 0));
 		row.setBackground(BG_BASE);;
@@ -461,7 +478,7 @@ public class MainWindow{
         return card;
 	}
 	
-	private JPanel buildResultsHeader() {
+	public JPanel buildResultsHeader() {
 		JPanel hdr = new JPanel(new BorderLayout());
         hdr.setBackground(BG_BASE);
         hdr.setMaximumSize(new Dimension(Integer.MAX_VALUE, 24));
@@ -480,7 +497,7 @@ public class MainWindow{
         return hdr;
 	}
 	
-		private JPanel buildResults(List<Exoplanet> p) {
+		public JPanel buildResults(List<Exoplanet> p) {
 			JPanel panel = new JPanel();
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 			panel.setBackground(BG_BASE);
@@ -536,6 +553,28 @@ public class MainWindow{
 			nrf.add(text);
 			return(nrf);
 
+		}
+		
+		public void updateResultCount(int count) {
+			this.resultsCountLabel.setText(String.valueOf(count));
+		}
+		
+		public void styleScrollPane(JScrollPane scrollPane) {
+			scrollPane.setOpaque(false);
+			scrollPane.getViewport().setOpaque(false);
+			scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+				@Override
+				protected void configureScrollBarColors() {
+					this.thumbColor = COL_BORDER;
+					this.trackColor = BG_CARD;}
+				});
+			scrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
+				@Override
+				protected void configureScrollBarColors() {
+					this.thumbColor = COL_BORDER;
+					this.trackColor = BG_CARD;
+					}
+				});
 		}
 
 		public void show() {
