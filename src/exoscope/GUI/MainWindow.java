@@ -144,6 +144,7 @@ public class MainWindow{
 		
 		RadiusSearchWindow radiusSearch = new RadiusSearchWindow(this, planets);
 		MassSearchWindow massSearch = new MassSearchWindow(this, planets);
+		OrbitSearchWindow orbitSearch = new OrbitSearchWindow(this, planets);
 		
 		
 		centerPanel.add(main, "MAIN");
@@ -151,6 +152,7 @@ public class MainWindow{
 		centerPanel.add(infoDetailPanel,"INFO_DETAIL");
 		centerPanel.add(radiusSearch, "RADIUS_PANEL");
 		centerPanel.add(massSearch, "MASS_PANEL");
+		centerPanel.add(orbitSearch, "ORBIT_PANEL");
 		    
 		
 			
@@ -596,6 +598,8 @@ public class MainWindow{
 	    			centerLayout.show(centerPanel, "RADIUS_PANEL");
 	    		} else if (text.equals("MASS")){
 	    			centerLayout.show(centerPanel,  "MASS_PANEL");
+	    		} else if (text.equals("ORBIT PERIOD")) {
+	    			centerLayout.show(centerPanel,  "ORBIT_PANEL");
 	    		} else {
 	    			centerLayout.show(centerPanel, "MAIN");
 	    		}
