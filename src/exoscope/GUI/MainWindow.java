@@ -24,14 +24,14 @@ public class MainWindow{
 	public static final Color COL_BORDER = new Color(0x3a, 0x3a, 0xff); // bright blue/purple for borders
 	public static final Color COL_TEXT = new Color(0xe0, 0xe0, 0xff); // softer white/blue for main text color
 	public static final Color COL_MUTED = new Color(0x5a, 0x5a, 0x9a); // dimmer purple/grey for inactive items
-	private static final Color COL_ACCENT = new Color(0x7b, 0x7b, 0xff); // blue/purple for titles and things to be highlights
+	public static final Color COL_ACCENT = new Color(0x7b, 0x7b, 0xff); // blue/purple for titles and things to be highlights
 	private static final Color COL_GREEN = new Color(0x00, 0xff, 0x88); // neon green, for the result count
 	
 	private String currentSearchType = "PLANET NAME"; // default search
 	
 	private Font pixelFont; // large
 	public Font pixelFontSm; // medium
-	public Font pixelFontXs; // small
+	public static Font pixelFontXs; // small
 	
 	private JFrame window;
 	private JPanel sidebar;
@@ -654,12 +654,19 @@ public class MainWindow{
 
 	    return main;
 	}
+
 	
 	private JPanel buildSearchBar(List<Exoplanet> planets, JPanel rc) {
 		QueryEngine qe = new QueryEngine(planets);
 		JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 6));
 		JTextField field = new JTextField(20);
-		field.addActionListener(new ActionListener() {
+        JButton searchButton = new JButton("SEARCH");
+        searchButton.setFont(pixelFontXs);
+        searchButton.setBackground(COL_ACCENT); 
+        searchButton.setForeground(BG_BASE);
+        searchButton.setOpaque(true);
+        searchButton.setBorderPainted(false);
+        ActionListener searchAction = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String query = field.getText();
@@ -711,7 +718,10 @@ public class MainWindow{
 					rc.add(scrollPane);
 					rc.revalidate();
 					rc.repaint(); }
-		});
+		};
+		
+		searchButton.addActionListener(searchAction);
+	    field.addActionListener(searchAction);
 
 		bar.setBackground(BG_PANEL);
 		bar.setBorder(BorderFactory.createLineBorder(COL_BORDER, 3));
@@ -729,6 +739,7 @@ public class MainWindow{
 		bar.add(prompt);
 		bar.add(searchPromptLabel); // this ispdated label
 		bar.add(field);
+		bar.add(searchButton);
 
 		return bar;}
 	

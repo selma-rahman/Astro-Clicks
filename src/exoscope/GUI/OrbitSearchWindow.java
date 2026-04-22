@@ -3,6 +3,8 @@ package GUI;
 // for orbit search
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 import model.Exoplanet;
@@ -36,6 +38,11 @@ public class OrbitSearchWindow extends JPanel{
         JTextField minField = new JTextField(5);
         JTextField maxField = new JTextField(5);
         JButton searchButton = new JButton("SEARCH");
+        searchButton.setFont(MainWindow.pixelFontXs);
+        searchButton.setBackground(MainWindow.COL_ACCENT); 
+        searchButton.setForeground(MainWindow.BG_BASE);
+        searchButton.setOpaque(true);
+        searchButton.setBorderPainted(false);
         
         JPanel search = new JPanel(new FlowLayout(FlowLayout.LEFT,15,6));
         search.setBackground(MainWindow.BG_PANEL);
@@ -102,13 +109,15 @@ public class OrbitSearchWindow extends JPanel{
 		/*
 		 * JTextArea resultsArea = new JTextArea(); resultsArea.setEditable(false);
 		 */
-
-        searchButton.addActionListener(e -> {
-            try {
-                double min = Double.parseDouble(minField.getText());
+        
+        
+        ActionListener searchAction = new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		double min = Double.parseDouble(minField.getText());
                 double max = Double.parseDouble(maxField.getText());
 
-                List<Exoplanet> results = qe.filterByOrbitalPeriod(min, max);
+                List<Exoplanet> results = qe.filterByRadius(min, max);
 
                 resultsContainer.removeAll();
                 resultsContainer.add(main.buildResults(results));
@@ -116,9 +125,26 @@ public class OrbitSearchWindow extends JPanel{
 
                 resultsContainer.revalidate();
                 resultsContainer.repaint();
-            } catch(Exception ex){
-            }
-        });
+        	}
+        };
+        
+        searchButton.addActionListener(searchAction);
+        maxField.addActionListener(searchAction);
+
+		/*
+		 * searchButton.addActionListener(e -> { try { double min =
+		 * Double.parseDouble(minField.getText()); double max =
+		 * Double.parseDouble(maxField.getText());
+		 * 
+		 * List<Exoplanet> results = qe.filterByOrbitalPeriod(min, max);
+		 * 
+		 * resultsContainer.removeAll();
+		 * resultsContainer.add(main.buildResults(results));
+		 * main.updateResultCount(results.size());
+		 * 
+		 * resultsContainer.revalidate(); resultsContainer.repaint(); } catch(Exception
+		 * ex){ } });
+		 */
     }
 
 }
