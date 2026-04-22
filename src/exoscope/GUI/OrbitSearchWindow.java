@@ -117,8 +117,12 @@ public class OrbitSearchWindow extends JPanel{
         		double min = Double.parseDouble(minField.getText());
                 double max = Double.parseDouble(maxField.getText());
 
-                List<Exoplanet> results = qe.filterByRadius(min, max);
+                List<Exoplanet> results = qe.filterByOrbitalPeriod(min, max);
+                
+                // sort ascending order
+                results.sort(Comparator.comparingDouble(Exoplanet::getOrbitalPeriod));
 
+                
                 resultsContainer.removeAll();
                 resultsContainer.add(main.buildResults(results));
                 main.updateResultCount(results.size());

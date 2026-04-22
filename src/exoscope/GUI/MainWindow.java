@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.awt.event.*;
 import logic.QueryEngine;
 import model.Exoplanet;
+
+import java.util.Comparator;
 import java.util.List;
 import java.awt.Desktop;
 import java.net.URI;
@@ -677,9 +679,11 @@ public class MainWindow{
 				switch(currentSearchType) {
 					case "PLANET NAME":
 						results = qe.filterByName(query);
+						results.sort(Comparator.comparing(Exoplanet::getName));
 						break;
 					case "HOST STAR":
 						results = qe.filterByHostStar(query);
+						results.sort(Comparator.comparing(Exoplanet::getHostStar));
 						break;
 					case "METHOD":
 						results = qe.filterByDiscoveryMethod(query);
@@ -688,7 +692,7 @@ public class MainWindow{
 						String[] parts = query.split(",");
 						double min = Double.parseDouble(parts[0].trim());
 						double max = Double.parseDouble(parts[1].trim());
-						results = qe.filterByRadius(min, max); // or mass depending on implementation
+						results = qe.filterByRadius(min, max); // or mass depending on implementation	
 						break;
 					case "MASS":
 						String[] parts2 = query.split(", ");
