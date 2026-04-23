@@ -14,6 +14,7 @@ public class RadiusSearchWindow extends JPanel{
 
 	private MainWindow main;
 	private JPanel resultsContainer;
+	private JLabel radiusResultsCountLabel;
     private List<Exoplanet> planets;
 
     public RadiusSearchWindow(MainWindow main, List<Exoplanet> planets){
@@ -60,21 +61,58 @@ public class RadiusSearchWindow extends JPanel{
         search.add(prompt);
         search.add(label);
         search.add(minField);
-        JLabel maxLabel = new JLabel(" MAX RADIUS: ");
+        JLabel maxLabel = new JLabel("MAX RADIUS: ");
         maxLabel.setFont(main.pixelFontXs);
         maxLabel.setForeground(MainWindow.COL_MUTED);
         search.add(maxLabel);
         search.add(maxField);
         search.add(searchButton);
         
-        JPanel stats = main.buildStatCards(planets);
-        
         top.add(search);
-        top.add(Box.createVerticalStrut(12));
-        top.add(stats);
-        top.add(Box.createVerticalStrut(12));
-        top.add(main.buildResultsHeader());
-        top.add(Box.createVerticalStrut(6));
+
+     // local stats row
+     JPanel stats = new JPanel(new GridLayout(1, 3, 8, 0));
+     stats.setBackground(MainWindow.BG_BASE);
+     stats.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+     stats.setOpaque(false);
+
+     // planets loaded
+     stats.add(main.statCard("PLANETS LOADED",
+             Integer.toString(planets.size()),
+             MainWindow.COL_TEXT));
+
+     // results found
+     JPanel resultsCard = new JPanel();
+     resultsCard.setLayout(new BoxLayout(resultsCard, BoxLayout.Y_AXIS));
+     resultsCard.setBackground(MainWindow.BG_PANEL);
+     resultsCard.setBorder(BorderFactory.createCompoundBorder(
+             BorderFactory.createLineBorder(MainWindow.COL_BORDER, 2),
+             BorderFactory.createEmptyBorder(10, 12, 10, 12)
+     ));
+
+     JLabel resultsLabel = new JLabel("RESULTS FOUND");
+     resultsLabel.setFont(MainWindow.pixelFontXs);
+     resultsLabel.setForeground(MainWindow.COL_BORDER);
+
+     radiusResultsCountLabel = new JLabel("0");
+     radiusResultsCountLabel.setFont(main.pixelFontSm);
+     radiusResultsCountLabel.setForeground(new Color(0x00,255,136));
+
+     resultsCard.add(resultsLabel);
+     resultsCard.add(radiusResultsCountLabel);
+
+     stats.add(resultsCard);
+
+     // page
+     stats.add(main.statCard("PAGE", "67", MainWindow.COL_TEXT));
+
+     top.add(Box.createVerticalStrut(12));
+     top.add(stats);
+     top.add(Box.createVerticalStrut(12));
+
+     top.add(main.buildResultsHeader());
+     top.add(Box.createVerticalStrut(6));
+       
         
         resultsContainer = new JPanel();
         resultsContainer.setLayout(new BoxLayout(resultsContainer, BoxLayout.Y_AXIS));
@@ -114,8 +152,10 @@ public class RadiusSearchWindow extends JPanel{
         ActionListener searchAction = new ActionListener() {
         	@Override
         	public void actionPerformed(ActionEvent e) {
-        		double min = Double.parseDouble(minField.getText());
-                double max = Double.parseDouble(maxField.getText());
+        		//double min = Double.parseDouble(minField.getText());
+                //double max = Double.parseDouble(maxField.getText());
+        		double min = Double.parseDouble(minField.getText().trim());
+        		double max = Double.parseDouble(maxField.getText().trim());
 
                 List<Exoplanet> results = qe.filterByRadius(min, max);
                 
@@ -125,14 +165,17 @@ public class RadiusSearchWindow extends JPanel{
                 resultsContainer.removeAll();
                 resultsContainer.add(main.buildResults(results));
                 main.updateResultCount(results.size());
+                radiusResultsCountLabel.setText(String.valueOf(results.size()));
 
                 resultsContainer.revalidate();
                 resultsContainer.repaint();
+                
         	}
         };
         
         searchButton.addActionListener(searchAction);
         maxField.addActionListener(searchAction);
+        minField.addActionListener(searchAction);
         
 		/*
 		 * searchButton.addActionListener(e -> { try { double min =

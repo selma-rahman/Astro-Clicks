@@ -56,7 +56,9 @@ public class MainWindow{
 	private CardLayout cardLayout;
 	
 	
-	private JLabel resultsCountLabel = new JLabel("0");;
+	//private JLabel resultsCountLabel = new JLabel("0");;
+	private JLabel resultsCountLabel; //make it direct
+	private JPanel resultsBody; 
 	
 	private List<Exoplanet> planets;
 	
@@ -143,19 +145,26 @@ public class MainWindow{
 	    infoHomePanel = buildInfoHome();
 	    infoDetailPanel = buildInfoDetail();
 
-		
+	    PlanetNameSearchWindow planetSearch = new PlanetNameSearchWindow(this, planets);
 		RadiusSearchWindow radiusSearch = new RadiusSearchWindow(this, planets);
 		MassSearchWindow massSearch = new MassSearchWindow(this, planets);
 		OrbitSearchWindow orbitSearch = new OrbitSearchWindow(this, planets);
+		HostStarSearchWindow hostSearch = new HostStarSearchWindow(this, planets);
+		YearSearchWindow yearSearch = new YearSearchWindow(this, planets);
+		MethodSearchWindow methodSearch = new MethodSearchWindow(this, planets);
+		
 		
 		
 		centerPanel.add(main, "MAIN");
 		centerPanel.add(infoHomePanel, "INFO_HOME");
 		centerPanel.add(infoDetailPanel,"INFO_DETAIL");
+		centerPanel.add(planetSearch, "PLANET_PANEL");
 		centerPanel.add(radiusSearch, "RADIUS_PANEL");
 		centerPanel.add(massSearch, "MASS_PANEL");
 		centerPanel.add(orbitSearch, "ORBIT_PANEL");
-		    
+		centerPanel.add(hostSearch, "HOST_PANEL");
+		centerPanel.add(methodSearch, "METHOD_PANEL");
+		centerPanel.add(yearSearch, "YEAR_PANEL");
 		
 			
 		root.add(buildTitleBar(), BorderLayout.NORTH);
@@ -596,16 +605,27 @@ public class MainWindow{
 	    		searchPromptLabel.setText("ENTER " + currentSearchType + ":");
 	    		}
 	    		
-	    		if (text.equals("RADIUS")) {
-	    			centerLayout.show(centerPanel, "RADIUS_PANEL");
-	    		} else if (text.equals("MASS")){
-	    			centerLayout.show(centerPanel,  "MASS_PANEL");
+	    		if (text.equals("PLANET NAME")) {
+	    		    centerLayout.show(centerPanel, "PLANET_PANEL");
+
+	    		} else if (text.equals("RADIUS")) {
+	    		    centerLayout.show(centerPanel, "RADIUS_PANEL");
+
+	    		} else if (text.equals("MASS")) {
+	    		    centerLayout.show(centerPanel, "MASS_PANEL");
+
 	    		} else if (text.equals("ORBIT PERIOD")) {
-	    			centerLayout.show(centerPanel,  "ORBIT_PANEL");
+	    		    centerLayout.show(centerPanel, "ORBIT_PANEL");
+
+	    		} else if (text.equals("HOST STAR")) {
+	    		    centerLayout.show(centerPanel, "HOST_PANEL");
+	    		} else if (text.equals("METHOD")) {
+	    		    centerLayout.show(centerPanel, "METHOD_PANEL");
+	    		} else if (text.equals("YEAR")) {
+	    		    centerLayout.show(centerPanel, "YEAR_PANEL");
 	    		} else {
-	    			centerLayout.show(centerPanel, "MAIN");
+	    		    centerLayout.show(centerPanel, "MAIN");
 	    		}
-	    		
 	    	
 	    	// to refresh sidebar 
 	    	window.remove(sidebar);
@@ -640,7 +660,8 @@ public class MainWindow{
 	    resultsSection.setLayout(new BoxLayout(resultsSection, BoxLayout.Y_AXIS));
 	    resultsSection.setOpaque(false);
 
-	    JPanel resultsBody = new JPanel();
+	    //JPanel resultsBody = new JPanel();
+	    resultsBody = new JPanel();
 	    resultsBody.setLayout(new BoxLayout(resultsBody, BoxLayout.Y_AXIS));
 	    resultsBody.setOpaque(false);
 
@@ -695,7 +716,7 @@ public class MainWindow{
 						results = qe.filterByRadius(min, max); // or mass depending on implementation	
 						break;
 					case "MASS":
-						String[] parts2 = query.split(", ");
+						String[] parts2 = query.split(",");
 						double min2 = Double.parseDouble(parts2[0].trim());
 						double max2 = Double.parseDouble(parts2[1].trim());
 						results = qe.filterByMass(min2, max2);
@@ -713,15 +734,8 @@ public class MainWindow{
 					default:
 						results = qe.filterByName(query);
 						}
-				// update results count
-					resultsCountLabel.setText(Integer.toString(results.size()));
-					rc.removeAll();
-					JScrollPane scrollPane = new JScrollPane(buildResults(results));
-					styleScrollPane(scrollPane);
-
-					rc.add(scrollPane);
-					rc.revalidate();
-					rc.repaint(); }
+				showResults(results); // update results count
+			}
 		};
 		
 		searchButton.addActionListener(searchAction);
@@ -748,7 +762,7 @@ public class MainWindow{
 		return bar;}
 	
 	
-	public JPanel buildStatCards(List<Exoplanet> planets) {
+	/*public JPanel buildStatCards(List<Exoplanet> planets) {
 		// 1 row 3 columns 8px horizontal gap, 0 vertical gap
 		JPanel row = new JPanel(new GridLayout(1, 3, 8, 0));
 		row.setBackground(BG_BASE);;
@@ -768,10 +782,46 @@ public class MainWindow{
 		row.add(statCard("PAGE", "67", COL_TEXT));		
 		
 		return row;
-	}
+	} */
+	
+	public JPanel buildStatCards(List<Exoplanet> planets) {
+	    JPanel row = new JPanel(new GridLayout(1, 3, 8, 0));
+	    row.setBackground(BG_BASE);
+	    row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+
+	    row.add(statCard("PLANETS LOADED", Integer.toString(planets.size()), COL_TEXT));
+
+	    JPanel resultsCard = new JPanel();
+	    resultsCard.setLayout(new BoxLayout(resultsCard, BoxLayout.Y_AXIS));
+	    resultsCard.setBackground(BG_PANEL);
+	    resultsCard.setBorder(BorderFactory.createCompoundBorder(
+	        BorderFactory.createLineBorder(COL_BORDER, 2),
+	        BorderFactory.createEmptyBorder(10, 12, 10, 12)
+	    ));
+
+	    JLabel resultsLabel = new JLabel("RESULTS FOUND");
+	    resultsLabel.setFont(pixelFontXs);
+	    resultsLabel.setForeground(COL_BORDER);
+	    resultsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+	    resultsCountLabel = new JLabel("0");
+	    resultsCountLabel.setFont(pixelFont);
+	    resultsCountLabel.setForeground(COL_GREEN);
+	    resultsCountLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+	    resultsCountLabel.setBorder(BorderFactory.createEmptyBorder(6, 0, 0, 0));
+
+	    resultsCard.add(resultsLabel);
+	    resultsCard.add(resultsCountLabel);
+
+	    row.add(resultsCard);
+	    row.add(statCard("PAGE", "67", COL_TEXT));
+
+	    return row;
+	}	
+	
 	
 	// single stat box
-	private JPanel statCard(String label, String value, Color valueColor) {
+	public JPanel statCard(String label, String value, Color valueColor) {
 		JPanel card = new JPanel();
 		card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
 		card.setBackground(BG_PANEL);;
@@ -853,7 +903,7 @@ public class MainWindow{
 			return row;
 		}
 		
-		private JPanel noResultsFound() {
+		public JPanel noResultsFound() {
 			JPanel nrf = new JPanel();
 			
 			nrf.setBackground(BG_PANEL);
@@ -870,8 +920,16 @@ public class MainWindow{
 
 		}
 		
-		public void updateResultCount(int count) {
+		/*public void updateResultCount(int count) {
 			this.resultsCountLabel.setText(String.valueOf(count));
+		}*/
+		
+		public void updateResultCount(int count) {
+		    if (resultsCountLabel != null) {
+		        resultsCountLabel.setText(String.valueOf(count));
+		        resultsCountLabel.revalidate();
+		        resultsCountLabel.repaint();
+		    }
 		}
 		
 		public void styleScrollPane(JScrollPane scrollPane) {
@@ -891,6 +949,19 @@ public class MainWindow{
 					}
 				});
 		}
+		
+		public void showResults(List<Exoplanet> results) {
+		    updateResultCount(results.size());
+
+		    resultsBody.removeAll();
+		    JScrollPane scrollPane = new JScrollPane(buildResults(results));
+		    styleScrollPane(scrollPane);
+
+		    resultsBody.add(scrollPane);
+		    resultsBody.revalidate();
+		    resultsBody.repaint();
+		}
+		
 
 		public void show() {
 			window.setVisible(true);
