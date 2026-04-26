@@ -102,10 +102,7 @@ public class HostStarSearchWindow extends JPanel {
 
         stats.add(resultsCard);
 
-        stats.add(main.statCard(
-                "PAGE",
-                "67",
-                MainWindow.COL_TEXT));
+        stats.add(main.statCard("DATA UPDATED", "02/2026", MainWindow.COL_TEXT));
 
         top.add(Box.createVerticalStrut(12));
         top.add(stats);

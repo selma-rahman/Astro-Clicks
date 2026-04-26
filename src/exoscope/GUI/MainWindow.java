@@ -761,29 +761,6 @@ public class MainWindow{
 
 		return bar;}
 	
-	
-	/*public JPanel buildStatCards(List<Exoplanet> planets) {
-		// 1 row 3 columns 8px horizontal gap, 0 vertical gap
-		JPanel row = new JPanel(new GridLayout(1, 3, 8, 0));
-		row.setBackground(BG_BASE);;
-		row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
-		
-		
-		
-		// PLANETS LOADED stays number
-		row.add(statCard("PLANETS LOADED", Integer.toString(planets.size()), COL_TEXT));
-
-		// RESULTS FOUND → placeholder
-		JPanel resultsCard = statCard("RESULTS FOUND", "...", COL_GREEN);
-		this.resultsCountLabel = (JLabel) resultsCard.getComponent(1);
-		row.add(resultsCard);
-
-		// PAGE
-		row.add(statCard("PAGE", "67", COL_TEXT));		
-		
-		return row;
-	} */
-	
 	public JPanel buildStatCards(List<Exoplanet> planets) {
 	    JPanel row = new JPanel(new GridLayout(1, 3, 8, 0));
 	    row.setBackground(BG_BASE);
@@ -814,7 +791,7 @@ public class MainWindow{
 	    resultsCard.add(resultsCountLabel);
 
 	    row.add(resultsCard);
-	    row.add(statCard("PAGE", "67", COL_TEXT));
+	    row.add(statCard("DATA UPDATED", "02/2026", COL_TEXT));
 
 	    return row;
 	}	
@@ -853,12 +830,8 @@ public class MainWindow{
         left.setFont(pixelFontXs);
         left.setForeground(COL_BORDER);
 
-        JLabel right = new JLabel("placeholder");
-        right.setFont(pixelFontXs);
-        right.setForeground(COL_ACCENT);
 
         hdr.add(left, BorderLayout.WEST);
-        hdr.add(right, BorderLayout.EAST);
         return hdr;
 	}
 	
