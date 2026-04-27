@@ -40,6 +40,7 @@ public class MainWindow{
 	
 	private JPanel main;
 	private JPanel infoHomePanel;
+	private JPanel homePanel; // for homepagee
 	private JPanel infoDetailPanel;
 	
 	private JLabel detailTitleLabel;
@@ -141,6 +142,7 @@ public class MainWindow{
 	    centerPanel = new JPanel(centerLayout);
 	    centerPanel.setOpaque(false);
 
+	    homePanel = buildHomePanel(); // to build a seprate home panell
 	    main = buildMain(this.planets);
 	    infoHomePanel = buildInfoHome();
 	    infoDetailPanel = buildInfoDetail();
@@ -155,6 +157,7 @@ public class MainWindow{
 		
 		
 		
+		centerPanel.add(homePanel, "HOME"); 
 		centerPanel.add(main, "MAIN");
 		centerPanel.add(infoHomePanel, "INFO_HOME");
 		centerPanel.add(infoDetailPanel,"INFO_DETAIL");
@@ -165,6 +168,9 @@ public class MainWindow{
 		centerPanel.add(hostSearch, "HOST_PANEL");
 		centerPanel.add(methodSearch, "METHOD_PANEL");
 		centerPanel.add(yearSearch, "YEAR_PANEL");
+		
+		centerLayout.show(centerPanel, "HOME");
+	
 		
 			
 		root.add(buildTitleBar(), BorderLayout.NORTH);
@@ -197,6 +203,10 @@ public class MainWindow{
 		sidebar.setBackground(BG_PANEL);
 		sidebar.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 0, 3, COL_BORDER), BorderFactory.createEmptyBorder(14, 10, 14, 10)));
 		sidebar.setPreferredSize(new Dimension(200, 0));
+		
+		sidebar.add(sidebarSection("// TO NAVIGAte"));
+		sidebar.add(sidebarItem("HOME", currentSearchType.equals("HOME")));
+		sidebar.add(Box.createVerticalStrut(8));
 		
 		sidebar.add(sidebarSection("// SEARCH BY"));
 		sidebar.add(sidebarItem("PLANET NAME", currentSearchType.equals("PLANET NAME")));
@@ -321,6 +331,11 @@ public class MainWindow{
 	        window.revalidate();
 	        window.repaint();
 	    });
+	    
+	    JButton homeButton = retroButton("HOME");
+	    homeButton.addActionListener(e ->
+	        centerLayout.show(centerPanel, "HOME")
+	    );
 
 	    JLabel title = new JLabel("DISCOVERY METHODS", SwingConstants.CENTER);
 	    title.setFont(pixelFontSm);
@@ -347,10 +362,21 @@ public class MainWindow{
 
 	    rightTop.add(infoLabel);
 	    rightTop.add(nasaLink);
+	    
+	    
+	    JPanel leftButtons = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+	    leftButtons.setOpaque(false);
 
-	    top.add(backButton, BorderLayout.WEST);
+	    leftButtons.add(backButton);
+	    leftButtons.add(homeButton);
+
+	    top.add(leftButtons, BorderLayout.WEST); // homebutton and backbutton
 	    top.add(title, BorderLayout.CENTER);
 	    top.add(rightTop, BorderLayout.EAST);
+
+	   // top.add(backButton, BorderLayout.WEST);
+	    //top.add(title, BorderLayout.CENTER);
+	    //top.add(rightTop, BorderLayout.EAST);
 
 	    JPanel grid = new JPanel(new GridLayout(2, 3, 24, 24));
 	    grid.setOpaque(false);
@@ -605,8 +631,10 @@ public class MainWindow{
 	    		searchPromptLabel.setText("ENTER " + currentSearchType + ":");
 	    		}
 	    		
-	    		if (text.equals("PLANET NAME")) {
-	    		    centerLayout.show(centerPanel, "PLANET_PANEL");
+	    		if (text.equals("HOME")) {
+	    		    centerLayout.show(centerPanel, "HOME");
+
+	    		} else if (text.equals("PLANET NAME")) {
 
 	    		} else if (text.equals("RADIUS")) {
 	    		    centerLayout.show(centerPanel, "RADIUS_PANEL");
@@ -673,7 +701,21 @@ public class MainWindow{
 	    main.add(Box.createVerticalStrut(12));
 	    main.add(buildStatCards(planets));
 	    main.add(Box.createVerticalStrut(12));
+	    
 	    main.add(resultsSection);
+
+	    JPanel bottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+	    bottom.setOpaque(false);
+
+	    JButton homeBtn = retroButton("HOME");
+	    homeBtn.addActionListener(e ->
+	        centerLayout.show(centerPanel, "HOME")
+	    );
+
+	    bottom.add(homeBtn);
+
+	    main.add(Box.createVerticalStrut(8));
+	    main.add(bottom);
 
 	    return main;
 	}
@@ -849,8 +891,104 @@ public class MainWindow{
 			if (p.size() == 0) {
 				panel = noResultsFound();
 			}
-			
 			return panel;
+		}
+	
+		private JPanel buildHomePanel() {
+		    JPanel home = new JPanel();
+		    home.setLayout(new BoxLayout(home, BoxLayout.Y_AXIS));
+		    home.setOpaque(false);
+		    home.setBorder(BorderFactory.createEmptyBorder(40, 50, 40, 50));
+
+		    JLabel welcome = new JLabel("WELCOME TO");
+		    welcome.setFont(pixelFontSm);
+		    welcome.setForeground(COL_TEXT);
+		    welcome.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		    JLabel title = new JLabel("✦ EXOSCOPE ✦");
+		    title.setFont(pixelFont);
+		    title.setForeground(COL_ACCENT);
+		    title.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		    JLabel subtitle = new JLabel("EXPLORE NASA EXOPLANET DATA");
+		    subtitle.setFont(pixelFontXs);
+		    subtitle.setForeground(COL_GREEN);
+		    subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		    JTextArea info = new JTextArea(
+		        "Exoscope is an application that allows users to explore and analyze data about discovered exoplanets using publicly available NASA datasets. Users will be able to query exoplanets based on characteristics such as: size, orbital period, distance from Earth, and host star properties. The system will display results in a structured format and later revisions will provide visualizations to help users understand patterns and trends." +
+		        "Choose whichever search option that you are most curious about from the sidebar or start with planet name."
+		    );
+		    info.setFont(pixelFontXs);
+		    info.setForeground(COL_TEXT);
+		    info.setBackground(BG_PANEL);
+		    info.setEditable(false);
+		    info.setLineWrap(true);
+		    info.setWrapStyleWord(true);
+		    info.setMaximumSize(new Dimension(750, 90));
+		    info.setBorder(BorderFactory.createCompoundBorder(
+		        BorderFactory.createLineBorder(COL_BORDER, 2),
+		        BorderFactory.createEmptyBorder(15, 15, 15, 15)
+		    ));
+
+		    JPanel cards = new JPanel(new GridLayout(1, 3, 10, 0));
+		    cards.setOpaque(false);
+		    cards.setMaximumSize(new Dimension(750, 85));
+
+		    cards.add(statCard("PLANETS LOADED", Integer.toString(planets.size()), COL_TEXT));
+		    cards.add(statCard("SEARCH MODES", "7", COL_GREEN));
+		    cards.add(statCard("DATA UPDATED", "02/2026", COL_TEXT));
+
+		    JButton startButton = retroButton("START EXPLORING");
+		    startButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		    startButton.setMaximumSize(new Dimension(260, 45));
+		    startButton.addActionListener(e -> centerLayout.show(centerPanel, "PLANET_PANEL"));
+
+		    JLabel hint = new JLabel("Use the sidebar to search by planet name, host star, method, radius, mass, orbit, or year.");
+		    hint.setFont(pixelFontXs);
+		    hint.setForeground(COL_MUTED);
+		    hint.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		    home.add(Box.createVerticalGlue());
+		    home.add(welcome);
+		    home.add(Box.createVerticalStrut(10));
+		    home.add(title);
+		    home.add(Box.createVerticalStrut(12));
+		    home.add(subtitle);
+		    home.add(Box.createVerticalStrut(25));
+		    home.add(info);
+		    home.add(Box.createVerticalStrut(20));
+		    home.add(cards);
+		    home.add(Box.createVerticalStrut(25));
+		    home.add(startButton);
+		    home.add(Box.createVerticalStrut(15));
+		    home.add(hint);
+		    home.add(Box.createVerticalStrut(20));
+
+		    JLabel stars = new JLabel("✦　　·　　　*　　　✯　　　•　　　☆　　　*　　　·　　✦");
+		    stars.setFont(pixelFontXs);
+		    stars.setForeground(COL_MUTED);
+		    stars.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		    JLabel planets = new JLabel("　　✧　　　◌　　　☾　　　⊹　　　◍　　　✦　　　◌　　　☽　　　✧");
+		    planets.setFont(pixelFontXs);
+		    planets.setForeground(COL_ACCENT);
+		    planets.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		    JLabel stars2 = new JLabel("*　　°　　✵　　　•　　　✶　　★　　·　　　☆　　　°　　*");
+		    stars2.setFont(pixelFontXs);
+		    stars2.setForeground(COL_GREEN);
+		    stars2.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		    home.add(stars);
+		    home.add(Box.createVerticalStrut(5));
+		    home.add(planets);
+		    home.add(Box.createVerticalStrut(5));
+		    home.add(stars2);
+
+		    home.add(Box.createVerticalGlue());
+
+		    return home;
 		}
 
 		// a single result row
@@ -939,6 +1077,8 @@ public class MainWindow{
 		public void show() {
 			window.setVisible(true);
 		}
+		
+		
 		
 		
 
