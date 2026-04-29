@@ -22,7 +22,7 @@ public class MainWindow{
 	
 	public static final Color BG_BASE = new Color(0x05, 0x05, 0x10); // black navy ish
 	public static final Color BG_PANEL = new Color(0x07, 0x07, 0x18); // lighter, for sidebar and cards
-	private static final Color BG_CARD = new Color(0x0a, 0x0a, 0x2a); // active or highlight stuff
+	public static final Color BG_CARD = new Color(0x0a, 0x0a, 0x2a); // active or highlight stuff
 	public static final Color COL_BORDER = new Color(0x3a, 0x3a, 0xff); // bright blue/purple for borders
 	public static final Color COL_TEXT = new Color(0xe0, 0xe0, 0xff); // softer white/blue for main text color
 	public static final Color COL_MUTED = new Color(0x5a, 0x5a, 0x9a); // dimmer purple/grey for inactive items
@@ -50,8 +50,8 @@ public class MainWindow{
 	
 	private boolean infoMode = false;
 	
-	private JPanel centerPanel;
-	private CardLayout centerLayout;
+	JPanel centerPanel; // removed private for graphics
+	CardLayout centerLayout; // removed private for graphics
 	
 //	private JPanel cards;
 //	private CardLayout cardLayout;
@@ -165,13 +165,15 @@ public class MainWindow{
 		centerPanel.add(radiusSearch, "RADIUS_PANEL");
 		centerPanel.add(massSearch, "MASS_PANEL");
 		centerPanel.add(orbitSearch, "ORBIT_PANEL");
+
 		centerPanel.add(hostSearch, "HOST_PANEL");
 		centerPanel.add(methodSearch, "METHOD_PANEL");
 		centerPanel.add(yearSearch, "YEAR_PANEL");
+	
+		PlanetDetailPanel planetDetail = new PlanetDetailPanel(this);
+		centerPanel.add(planetDetail, "PLANET_DETAIL");		
 		
 		centerLayout.show(centerPanel, "HOME");
-	
-		
 			
 		root.add(buildTitleBar(), BorderLayout.NORTH);
 	    root.add(buildSidebar(), BorderLayout.WEST);
@@ -527,7 +529,7 @@ public class MainWindow{
 	    centerLayout.show(centerPanel, "INFO_DETAIL");
 	}
 	
-	private JButton retroButton(String text) {
+	public JButton retroButton(String text) {
 	    JButton btn = new JButton(text);
 	    btn.setFont(pixelFontXs);
 	    btn.setForeground(COL_TEXT);
@@ -804,8 +806,18 @@ public class MainWindow{
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 			panel.setBackground(BG_BASE);
 			panel.setOpaque(false);
+			
+			if (p.size() == 0) {
+				return noResultsFound();
+			}
 
-			for (Exoplanet i : p) {
+			for (Exoplanet planet : p) {
+				panel.add(buildPlanetRow(planet));
+				panel.add(Box.createVerticalStrut(5));
+			}
+			return panel;
+		}
+		/*
 				String strP = i.toString();
 				panel.add(buildPlanetRow(strP));
 				panel.add(Box.createVerticalStrut(5));
@@ -815,6 +827,7 @@ public class MainWindow{
 			}
 			return panel;
 		}
+		*/
 	
 		private JPanel buildHomePanel() {
 		    JPanel home = new JPanel();
@@ -912,7 +925,60 @@ public class MainWindow{
 
 		    return home;
 		}
+		
+		private JPanel buildPlanetRow(Exoplanet planet) {
+			JPanel row = new JPanel();
+			row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
+			row.setBackground(BG_PANEL);
+			row.setOpaque(false);
+			row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+			row.setBorder(BorderFactory.createLineBorder(new Color(0x1a, 0x1a, 0x4a), 2));
+			row.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			
+			JLabel star = new JLabel("\u2605");
+			star.setFont(pixelFontSm);
+			star.setForeground(COL_ACCENT);
+			star.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
+			
+			// Okay so only the name is shown and it will be underlined to signal to user that it's click-able
+			JLabel nameLabel = new JLabel("<html><u>" + planet.getName() + "</u></html>");
+			nameLabel.setFont(pixelFontXs);
+			nameLabel.setForeground(COL_ACCENT);
+			
+			row.add(star);
+			row.add(nameLabel);
+			row.add(Box.createHorizontalGlue());
+			
+			// when the user clicks on the row they're navigated to the planet detail page
+			MouseAdapter click = new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					// find the planetdetailpanel card and update
+					for (Component c : centerPanel.getComponents()) {
+						if (c instanceof PlanetDetailPanel) {
+							((PlanetDetailPanel) c).show(planet);
+							break;
+						}
+					}
+					centerLayout.show(centerPanel, "PLANET_DETAIL");
+				}
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					row.setBackground(BG_CARD);
+					row.setBorder(BorderFactory.createLineBorder(COL_BORDER, 2));
+				}
+				@Override
+				public void mouseExited(MouseEvent e) {
+					row.setBackground(BG_PANEL);
+					row.setBorder(BorderFactory.createLineBorder(new Color(0x1a, 0x1a, 0x4a), 2));
+				}
+			};
+			row.addMouseListener(click);
+			
+			return row;
+		}
 
+		/* making a new row so that only the name is click-able label rows
 		// a single result row
 		private JPanel buildPlanetRow(String text) {
 			JPanel row = new JPanel();
@@ -935,6 +1001,7 @@ public class MainWindow{
 			row.add(label);
 			return row;
 		}
+		*/
 		
 		public JPanel noResultsFound() {
 			JPanel nrf = new JPanel();
