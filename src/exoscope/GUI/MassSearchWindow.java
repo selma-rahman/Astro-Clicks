@@ -138,7 +138,6 @@ public class MassSearchWindow extends JPanel {
                 double max = Double.parseDouble(maxField.getText().trim());
 
                 List<Exoplanet> results = qe.filterByMass(min, max);
-                results.sort(Comparator.comparingDouble(Exoplanet::getMass));
 
                 resultsContainer.removeAll();
                 resultsContainer.add(main.buildResults(results));

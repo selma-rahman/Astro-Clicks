@@ -159,9 +159,6 @@ public class RadiusSearchWindow extends JPanel{
 
                 List<Exoplanet> results = qe.filterByRadius(min, max);
                 
-                // sort ascending order
-                results.sort(Comparator.comparingDouble(Exoplanet::getRadius));
-                
                 resultsContainer.removeAll();
                 resultsContainer.add(main.buildResults(results));
                 main.updateResultCount(results.size());

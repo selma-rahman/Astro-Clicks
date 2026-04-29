@@ -5,7 +5,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Comparator;
 import java.util.List;
 
 import model.Exoplanet;
@@ -138,7 +137,6 @@ public class OrbitSearchWindow extends JPanel {
                 double max = Double.parseDouble(maxField.getText().trim());
 
                 List<Exoplanet> results = qe.filterByOrbitalPeriod(min, max);
-                results.sort(Comparator.comparingDouble(Exoplanet::getOrbitalPeriod));
 
                 resultsContainer.removeAll();
                 resultsContainer.add(main.buildResults(results));

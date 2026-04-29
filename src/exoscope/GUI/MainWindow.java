@@ -15,6 +15,10 @@ import java.util.List;
 import java.awt.Desktop;
 import java.net.URI;
 
+import javax.swing.JTextPane;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+
 public class MainWindow{
 	// color palette, hex codes
 	// BG = background
@@ -35,8 +39,8 @@ public class MainWindow{
 	public Font pixelFontSm; // medium
 	public static Font pixelFontXs; // small
 	
-	private JFrame window;
-	private JPanel sidebar;
+	protected JFrame window;
+	protected JPanel sidebar;
 	
 	private JPanel main;
 	private JPanel infoHomePanel;
@@ -44,11 +48,11 @@ public class MainWindow{
 	private JPanel infoDetailPanel;
 	
 	private JLabel detailTitleLabel;
-	private JTextArea detailTextArea;
+	private JTextPane detailTextArea;
 	private JLabel detailImageLabel;
 	private JLabel searchPromptLabel;
 	
-	private boolean infoMode = false;
+	protected boolean infoMode = false;
 	
 	JPanel centerPanel; // removed private for graphics
 	CardLayout centerLayout; // removed private for graphics
@@ -198,7 +202,7 @@ public class MainWindow{
 	}
 		
 		// sidebar
-	private JPanel buildSidebar() {
+	protected JPanel buildSidebar() {
 		//JPanel sidebar = new JPanel();
 		sidebar = new JPanel();
 		sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
@@ -206,7 +210,7 @@ public class MainWindow{
 		sidebar.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 0, 3, COL_BORDER), BorderFactory.createEmptyBorder(14, 10, 14, 10)));
 		sidebar.setPreferredSize(new Dimension(200, 0));
 		
-		sidebar.add(sidebarSection("// TO NAVIGAte"));
+		sidebar.add(sidebarSection("// TO NAVIGATE"));
 		sidebar.add(sidebarItem("HOME", currentSearchType.equals("HOME")));
 		sidebar.add(Box.createVerticalStrut(8));
 		
@@ -238,8 +242,8 @@ public class MainWindow{
 	        item.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 	    }
 
-	    JLabel arrow = new JLabel(active ? "\u25BA" : "  ");
-	    arrow.setFont(pixelFontXs);
+	    JLabel arrow = new JLabel(active ? "►" : "  ");
+	    arrow.setFont(new Font("Arial Unicode MS", Font.PLAIN, 15));
 	    arrow.setForeground(COL_BORDER);
 
 	    JLabel label = new JLabel("DISC. METHOD");
@@ -473,16 +477,21 @@ public class MainWindow{
 
 	    JPanel top = new JPanel(new BorderLayout());
 	    top.setOpaque(false);
-	    top.add(backButton, BorderLayout.WEST);
+	    detailTitleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 	    top.add(detailTitleLabel, BorderLayout.CENTER);
+	    top.add(backButton, BorderLayout.WEST);
+	    Dimension btnSize = backButton.getPreferredSize();
+	    top.add(Box.createRigidArea(btnSize), BorderLayout.EAST);
 
 	    detailImageLabel = new JLabel();
 	    detailImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-	    detailTextArea = new JTextArea();
+	    
+	    detailTextArea = new JTextPane();
+	    SimpleAttributeSet attributes = new SimpleAttributeSet();
+	    StyleConstants.setLineSpacing(attributes,0.7f);
+	    detailTextArea.setParagraphAttributes(attributes, false);
 	    detailTextArea.setEditable(false);
-	    detailTextArea.setLineWrap(true);
-	    detailTextArea.setWrapStyleWord(true);
 	    detailTextArea.setFont(pixelFontXs);
 	    detailTextArea.setForeground(COL_TEXT);
 	    detailTextArea.setBackground(BG_PANEL);
@@ -511,8 +520,7 @@ public class MainWindow{
 	
 	private void showMethodDetail(String title, String text, String imagePath) {
 	    detailTitleLabel.setText(title);
-	    detailTextArea.setText(text);
-
+	    detailTextArea.setText(text);		    
 	    java.net.URL url = getClass().getResource(imagePath);
 	    if (url != null) {
 	        ImageIcon icon = new ImageIcon(url);
@@ -529,7 +537,7 @@ public class MainWindow{
 	    centerLayout.show(centerPanel, "INFO_DETAIL");
 	}
 	
-	public JButton retroButton(String text) {
+	protected JButton retroButton(String text) {
 	    JButton btn = new JButton(text);
 	    btn.setFont(pixelFontXs);
 	    btn.setForeground(COL_TEXT);
@@ -566,8 +574,8 @@ public class MainWindow{
 	        item.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 	    }
 
-	    JLabel arrow = new JLabel(active ? "\u25BA" : "  ");
-	    arrow.setFont(pixelFontXs);
+	    JLabel arrow = new JLabel(active ? "►" : "  ");
+	    arrow.setFont(new Font("Arial Unicode MS", Font.PLAIN, 15));
 	    arrow.setForeground(COL_BORDER);
 
 	    JLabel label = new JLabel(text);
@@ -727,7 +735,7 @@ public class MainWindow{
 //	    System.out.println("Searching for: " + query);
 //	}
 	
-	public JPanel buildStatCards(List<Exoplanet> planets) {
+	protected JPanel buildStatCards(List<Exoplanet> planets) {
 	    JPanel row = new JPanel(new GridLayout(1, 3, 8, 0));
 	    row.setBackground(BG_BASE);
 	    row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
@@ -764,7 +772,7 @@ public class MainWindow{
 	
 	
 	// single stat box
-	public JPanel statCard(String label, String value, Color valueColor) {
+	protected JPanel statCard(String label, String value, Color valueColor) {
 		JPanel card = new JPanel();
 		card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
 		card.setBackground(BG_PANEL);;
@@ -786,7 +794,7 @@ public class MainWindow{
         return card;
 	}
 	
-	public JPanel buildResultsHeader() {
+	protected JPanel buildResultsHeader() {
 		JPanel hdr = new JPanel(new BorderLayout());
         hdr.setBackground(BG_BASE);
         hdr.setMaximumSize(new Dimension(Integer.MAX_VALUE, 24));
@@ -801,7 +809,7 @@ public class MainWindow{
         return hdr;
 	}
 	
-		public JPanel buildResults(List<Exoplanet> p) {
+		protected JPanel buildResults(List<Exoplanet> p) {
 			JPanel panel = new JPanel();
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 			panel.setBackground(BG_BASE);
@@ -840,32 +848,53 @@ public class MainWindow{
 		    welcome.setForeground(COL_TEXT);
 		    welcome.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		    JLabel title = new JLabel("✦ EXOSCOPE ✦");
+		    JLabel title = new JLabel(" EXOSCOPE ");
 		    title.setFont(pixelFont);
 		    title.setForeground(COL_ACCENT);
 		    title.setAlignmentX(Component.CENTER_ALIGNMENT);
+		    
+		    JLabel exoStar = new JLabel("✦");
+		    JLabel exoStar2 = new JLabel("✦");
+		    exoStar.setFont(new Font("Arial Unicode MS", Font.PLAIN, 20));
+		    exoStar2.setFont(new Font("Arial Unicode MS", Font.PLAIN, 20));
+		    exoStar.setForeground(COL_ACCENT);
+		    exoStar2.setForeground(COL_ACCENT);
+		    
+		    JPanel panel = new JPanel();
+		    panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+		    panel.setOpaque(false);
+
+		    // Add labels to panel
+		    panel.add(exoStar);
+		    panel.add(title);
+		    panel.add(exoStar2);
+		    
+
+
+		    
 
 		    JLabel subtitle = new JLabel("EXPLORE NASA EXOPLANET DATA");
 		    subtitle.setFont(pixelFontXs);
 		    subtitle.setForeground(COL_GREEN);
 		    subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		    JTextArea info = new JTextArea(
-		        "Exoscope is an application that allows users to explore and analyze data about discovered exoplanets using publicly available NASA datasets. Users will be able to query exoplanets based on characteristics such as: size, orbital period, distance from Earth, and host star properties. The system will display results in a structured format and later revisions will provide visualizations to help users understand patterns and trends." +
-		        "Choose whichever search option that you are most curious about from the sidebar or start with planet name."
-		    );
+		    JTextPane info = new JTextPane();
+		    info.setText("Exoscope is an application that allows users to explore and analyze data about discovered exoplanets using publicly available NASA datasets. Users will be able to query exoplanets based on characteristics such as: size, orbital period, distance from Earth, and host star properties. The system will display results in a structured format and later revisions will provide visualizations to help users understand patterns and trends." +
+		        "Choose whichever search option that you are most curious about from the sidebar or start with planet name.");		    
+		    SimpleAttributeSet attributes = new SimpleAttributeSet();
+		    StyleConstants.setLineSpacing(attributes,0.7f);
+		    info.setParagraphAttributes(attributes, false);
+		    info.setMaximumSize(new Dimension(750, 90));
 		    info.setFont(pixelFontXs);
 		    info.setForeground(COL_TEXT);
 		    info.setBackground(BG_PANEL);
 		    info.setEditable(false);
-		    info.setLineWrap(true);
-		    info.setWrapStyleWord(true);
-		    info.setMaximumSize(new Dimension(750, 90));
 		    info.setBorder(BorderFactory.createCompoundBorder(
 		        BorderFactory.createLineBorder(COL_BORDER, 2),
-		        BorderFactory.createEmptyBorder(15, 15, 15, 15)
-		    ));
-
+		        BorderFactory.createEmptyBorder(15, 15, 5, 15)
+		    ));		  
+		    StyleConstants.setSpaceBelow(attributes, 0f);
+		    
 		    JPanel cards = new JPanel(new GridLayout(1, 3, 10, 0));
 		    cards.setOpaque(false);
 		    cards.setMaximumSize(new Dimension(750, 85));
@@ -879,7 +908,7 @@ public class MainWindow{
 		    startButton.setMaximumSize(new Dimension(260, 45));
 		    startButton.addActionListener(e -> centerLayout.show(centerPanel, "PLANET_PANEL"));
 
-		    JLabel hint = new JLabel("Use the sidebar to search by planet name, host star, method, radius, mass, orbit, or year.");
+		    JLabel hint = new JLabel("Use the sidebar to search by different planet features.");
 		    hint.setFont(pixelFontXs);
 		    hint.setForeground(COL_MUTED);
 		    hint.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -887,7 +916,7 @@ public class MainWindow{
 		    home.add(Box.createVerticalGlue());
 		    home.add(welcome);
 		    home.add(Box.createVerticalStrut(10));
-		    home.add(title);
+		    home.add(panel);
 		    home.add(Box.createVerticalStrut(12));
 		    home.add(subtitle);
 		    home.add(Box.createVerticalStrut(25));
@@ -901,17 +930,17 @@ public class MainWindow{
 		    home.add(Box.createVerticalStrut(20));
 
 		    JLabel stars = new JLabel("✦　　·　　　*　　　✯　　　•　　　☆　　　*　　　·　　✦");
-		    stars.setFont(pixelFontXs);
-		    stars.setForeground(COL_MUTED);
+		    stars.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		    stars.setForeground(COL_GREEN);
 		    stars.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		    JLabel planets = new JLabel("　　✧　　　◌　　　☾　　　⊹　　　◍　　　✦　　　◌　　　☽　　　✧");
-		    planets.setFont(pixelFontXs);
-		    planets.setForeground(COL_ACCENT);
+		    planets.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		    planets.setForeground(COL_GREEN);
 		    planets.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		    JLabel stars2 = new JLabel("*　　°　　✵　　　•　　　✶　　★　　·　　　☆　　　°　　*");
-		    stars2.setFont(pixelFontXs);
+		    stars2.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		    stars2.setForeground(COL_GREEN);
 		    stars2.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -1003,7 +1032,7 @@ public class MainWindow{
 		}
 		*/
 		
-		public JPanel noResultsFound() {
+		protected JPanel noResultsFound() {
 			JPanel nrf = new JPanel();
 			
 			nrf.setBackground(BG_PANEL);
@@ -1024,7 +1053,7 @@ public class MainWindow{
 			this.resultsCountLabel.setText(String.valueOf(count));
 		}*/
 		
-		public void updateResultCount(int count) {
+		protected void updateResultCount(int count) {
 		    if (resultsCountLabel != null) {
 		        resultsCountLabel.setText(String.valueOf(count));
 		        resultsCountLabel.revalidate();
@@ -1032,7 +1061,7 @@ public class MainWindow{
 		    }
 		}
 		
-		public void styleScrollPane(JScrollPane scrollPane) {
+		protected void styleScrollPane(JScrollPane scrollPane) {
 			scrollPane.setOpaque(false);
 			scrollPane.getViewport().setOpaque(false);
 			scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
@@ -1050,7 +1079,7 @@ public class MainWindow{
 				});
 		}
 		
-		public void showResults(List<Exoplanet> results) {
+		protected void showResults(List<Exoplanet> results) {
 		    updateResultCount(results.size());
 
 		    resultsBody.removeAll();

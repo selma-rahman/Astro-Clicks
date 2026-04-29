@@ -132,8 +132,6 @@ public class YearSearchWindow extends JPanel {
                     int year = Integer.parseInt(field.getText().trim());
 
                     List<Exoplanet> results = qe.filterByYear(year);
-                    results.sort(Comparator.comparing(Exoplanet::getYear));
-
                     resultsContainer.removeAll();
                     resultsContainer.add(main.buildResults(results));
 
