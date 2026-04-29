@@ -53,8 +53,8 @@ public class MainWindow{
 	private JPanel centerPanel;
 	private CardLayout centerLayout;
 	
-	private JPanel cards;
-	private CardLayout cardLayout;
+//	private JPanel cards;
+//	private CardLayout cardLayout;
 	
 	
 	//private JLabel resultsCountLabel = new JLabel("0");;
@@ -266,49 +266,7 @@ public class MainWindow{
 	    return item;
 	}
 	
-	private JPanel buildInfo() {
-	    JPanel mainInfo = new JPanel();
-	    mainInfo.setLayout(new BoxLayout(mainInfo, BoxLayout.Y_AXIS));
-	    mainInfo.setBackground(BG_BASE);
-	    mainInfo.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-	    mainInfo.setOpaque(false);
 
-	    JLabel title = new JLabel("EXOSCOPE INFO");
-	    title.setFont(pixelFontSm);
-	    title.setForeground(COL_ACCENT);
-	    title.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-	    JTextArea textArea = new JTextArea();
-	    textArea.setText(
-	        "Welcome to EXOSCOPE.\n\n" +
-	        "This program allows you to search exoplanets by:\n" +
-	        "- Planet Name\n" +
-	        "- Host Star\n" +
-	        "- Discovery Method\n" +
-	        "- Radius / Mass\n" +
-	        "- Orbit Period\n" +
-	        "- Year\n\n" +
-	        "Use the sidebar to switch search modes."
-	    );
-	    textArea.setFont(pixelFontXs);
-	    textArea.setForeground(COL_TEXT);
-	    textArea.setBackground(BG_PANEL);
-	    textArea.setCaretColor(COL_TEXT);
-	    textArea.setEditable(false);
-	    textArea.setLineWrap(true);
-	    textArea.setWrapStyleWord(true);
-	    textArea.setBorder(BorderFactory.createCompoundBorder(
-	        BorderFactory.createLineBorder(COL_BORDER, 2),
-	        BorderFactory.createEmptyBorder(10, 10, 10, 10)
-	    ));
-	    textArea.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-	    mainInfo.add(title);
-	    mainInfo.add(Box.createVerticalStrut(10));
-	    mainInfo.add(textArea);
-
-	    return mainInfo;
-	}
 	
 	private JPanel buildInfoHome() {
 	    JPanel page = new JPanel(new BorderLayout());
@@ -631,10 +589,18 @@ public class MainWindow{
 	    		searchPromptLabel.setText("ENTER " + currentSearchType + ":");
 	    		}
 	    		
+//	    		// Detect if "METHOD" is selected, and update the search bar
+//	            if ("METHOD".equals(text)) {
+//	                updateSearchBarWithDropdown();  // Switch to dropdown
+//	            } else {
+//	                updateSearchBarWithTextField();  // Keep default text field for others
+//	            }
+	    		
 	    		if (text.equals("HOME")) {
 	    		    centerLayout.show(centerPanel, "HOME");
 
 	    		} else if (text.equals("PLANET NAME")) {
+	    			centerLayout.show(centerPanel, "PLANET_PANEL");
 
 	    		} else if (text.equals("RADIUS")) {
 	    		    centerLayout.show(centerPanel, "RADIUS_PANEL");
@@ -697,7 +663,7 @@ public class MainWindow{
 	    resultsSection.add(Box.createVerticalStrut(6));
 	    resultsSection.add(resultsBody);
 
-	    main.add(buildSearchBar(planets, resultsBody));
+//	    main.add(buildSearchBar());
 	    main.add(Box.createVerticalStrut(12));
 	    main.add(buildStatCards(planets));
 	    main.add(Box.createVerticalStrut(12));
@@ -719,89 +685,45 @@ public class MainWindow{
 
 	    return main;
 	}
+	
+	// Modify the buildSearchBar method to accept either JTextField or JComboBox
+//	private JPanel buildSearchBar(JComponent component) {
+//	    JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 6));
+//
+//	    // Set the preferred size for the component (dropdown or text field)
+//	    component.setPreferredSize(new Dimension(200, 30));  // Adjust the size as necessary
+//
+//	    bar.add(component);
+//
+//	    JButton searchButton = new JButton("SEARCH");
+//	    searchButton.setFont(pixelFontXs);
+//	    searchButton.setBackground(COL_ACCENT); 
+//	    searchButton.setForeground(BG_BASE);
+//	    searchButton.setOpaque(true);
+//	    searchButton.setBorderPainted(false);
+//
+//	    searchButton.addActionListener(e -> {
+//	        String query = ((JTextField)component).getText();  // Handle textfield-based search
+//	        performSearch(query);
+//	    });
+//
+//	    bar.setBackground(BG_PANEL);
+//	    bar.setBorder(BorderFactory.createLineBorder(COL_BORDER, 3));
+//	    bar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));  // Ensure enough space for the component
+//
+//	    return bar;
+//	}
 
 	
-	private JPanel buildSearchBar(List<Exoplanet> planets, JPanel rc) {
-		QueryEngine qe = new QueryEngine(planets);
-		JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 6));
-		JTextField field = new JTextField(20);
-        JButton searchButton = new JButton("SEARCH");
-        searchButton.setFont(pixelFontXs);
-        searchButton.setBackground(COL_ACCENT); 
-        searchButton.setForeground(BG_BASE);
-        searchButton.setOpaque(true);
-        searchButton.setBorderPainted(false);
-        ActionListener searchAction = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String query = field.getText();
-				field.setText("");
+	
+	
 
-				List<Exoplanet> results;
-
-				switch(currentSearchType) {
-					case "PLANET NAME":
-						results = qe.filterByName(query);
-						results.sort(Comparator.comparing(Exoplanet::getName));
-						break;
-					case "HOST STAR":
-						results = qe.filterByHostStar(query);
-						results.sort(Comparator.comparing(Exoplanet::getHostStar));
-						break;
-					case "METHOD":
-						results = qe.filterByDiscoveryMethod(query);
-						break;
-					case "RADIUS":
-						String[] parts = query.split(",");
-						double min = Double.parseDouble(parts[0].trim());
-						double max = Double.parseDouble(parts[1].trim());
-						results = qe.filterByRadius(min, max); // or mass depending on implementation	
-						break;
-					case "MASS":
-						String[] parts2 = query.split(",");
-						double min2 = Double.parseDouble(parts2[0].trim());
-						double max2 = Double.parseDouble(parts2[1].trim());
-						results = qe.filterByMass(min2, max2);
-						break;
-					case "ORBIT PERIOD":
-						parts = query.split(",");
-						min = Double.parseDouble(parts[0].trim());
-						max = Double.parseDouble(parts[1].trim());
-						results = qe.filterByOrbitalPeriod(min, max);
-						break;
-					case "YEAR":
-						int year = Integer.parseInt(query.trim());
-						results = qe.filterByYear(year);
-						break;
-					default:
-						results = qe.filterByName(query);
-						}
-				showResults(results); // update results count
-			}
-		};
-		
-		searchButton.addActionListener(searchAction);
-	    field.addActionListener(searchAction);
-
-		bar.setBackground(BG_PANEL);
-		bar.setBorder(BorderFactory.createLineBorder(COL_BORDER, 3));
-		bar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-		
-		// small arrow prompt
-		JLabel prompt = new JLabel("?");
-		prompt.setFont(pixelFontSm);
-		prompt.setForeground(COL_BORDER);
-
-		// this is now the class field so we can update dynamically
-		searchPromptLabel = new JLabel("ENTER PLANET NAME:");
-		searchPromptLabel.setFont(pixelFontXs);
-		searchPromptLabel.setForeground(COL_MUTED);
-		bar.add(prompt);
-		bar.add(searchPromptLabel); // this ispdated label
-		bar.add(field);
-		bar.add(searchButton);
-
-		return bar;}
+	
+	// Example method to perform search (for illustration purposes)
+//	private void performSearch(String query) {
+//	    // Logic to perform search based on the query (could be dropdown or text field)
+//	    System.out.println("Searching for: " + query);
+//	}
 	
 	public JPanel buildStatCards(List<Exoplanet> planets) {
 	    JPanel row = new JPanel(new GridLayout(1, 3, 8, 0));

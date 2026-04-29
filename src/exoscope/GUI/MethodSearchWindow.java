@@ -38,7 +38,14 @@ public class MethodSearchWindow extends JPanel {
         top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
         top.setOpaque(false);
 
-        JTextField field = new JTextField(20);
+        // --- UPDATED: Swapping JTextField for JComboBox ---
+        String[] methods = { " ","Transit", "Radial Velocity", "Imaging", "Transit Timing Variations", "Orbital Brightness Modulation", "Pulsation Timing Variations", "Microlensing" };
+        JComboBox<String> methodDropdown = new JComboBox<>(methods);
+        methodDropdown.setFont(MainWindow.pixelFontXs);
+        methodDropdown.setBackground(MainWindow.BG_PANEL);
+        methodDropdown.setForeground(MainWindow.COL_TEXT);
+        // Ensure the dropdown doesn't stretch too thin
+        methodDropdown.setPreferredSize(new Dimension(250, 30)); 
 
         JButton searchButton = new JButton("SEARCH");
         searchButton.setFont(MainWindow.pixelFontXs);
@@ -50,19 +57,19 @@ public class MethodSearchWindow extends JPanel {
         JPanel search = new JPanel(new FlowLayout(FlowLayout.LEFT,15,6));
         search.setBackground(MainWindow.BG_PANEL);
         search.setBorder(BorderFactory.createLineBorder(MainWindow.COL_BORDER,3));
-        search.setMaximumSize(new Dimension(Integer.MAX_VALUE,40));
+        search.setMaximumSize(new Dimension(Integer.MAX_VALUE,45));
 
         JLabel prompt = new JLabel("?");
         prompt.setFont(main.pixelFontSm);
         prompt.setForeground(MainWindow.COL_BORDER);
 
-        JLabel label = new JLabel("ENTER METHOD:");
+        JLabel label = new JLabel("SELECT METHOD:");
         label.setFont(main.pixelFontXs);
         label.setForeground(MainWindow.COL_MUTED);
 
         search.add(prompt);
         search.add(label);
-        search.add(field);
+        search.add(methodDropdown); // Added dropdown instead of field
         search.add(searchButton);
 
         top.add(search);
@@ -123,11 +130,12 @@ public class MethodSearchWindow extends JPanel {
 
         QueryEngine qe = new QueryEngine(planets);
 
+        // --- UPDATED: Action Listener now reads from JComboBox ---
         ActionListener searchAction = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                String query = field.getText().trim();
+                String query = (String) methodDropdown.getSelectedItem();
 
                 List<Exoplanet> results = qe.filterByDiscoveryMethod(query);
                 results.sort(Comparator.comparing(Exoplanet::getDiscoveryMethod));
@@ -144,6 +152,8 @@ public class MethodSearchWindow extends JPanel {
         };
 
         searchButton.addActionListener(searchAction);
-        field.addActionListener(searchAction);
+        // Note: ComboBoxes don't use typical ActionListeners for "Enter" the same way TextFields do,
+        // but you can add one to the dropdown itself if you want it to search immediately on selection.
+        methodDropdown.addActionListener(searchAction); 
     }
 }
