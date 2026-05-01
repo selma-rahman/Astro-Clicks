@@ -52,10 +52,13 @@ public class MainWindow{
 	private JLabel detailImageLabel;
 	private JLabel searchPromptLabel;
 	
+	private JPanel currentResults;
+	
 	protected boolean infoMode = false;
 	
 	JPanel centerPanel; // removed private for graphics
 	CardLayout centerLayout; // removed private for graphics
+	
 	
 //	private JPanel cards;
 //	private CardLayout cardLayout;
@@ -178,6 +181,7 @@ public class MainWindow{
 		centerPanel.add(planetDetail, "PLANET_DETAIL");		
 		
 		centerLayout.show(centerPanel, "HOME");
+		
 			
 		root.add(buildTitleBar(), BorderLayout.NORTH);
 	    root.add(buildSidebar(), BorderLayout.WEST);
@@ -599,13 +603,7 @@ public class MainWindow{
 	    		if (searchPromptLabel != null) {
 	    		searchPromptLabel.setText("ENTER " + currentSearchType + ":");
 	    		}
-	    		
-//	    		// Detect if "METHOD" is selected, and update the search bar
-//	            if ("METHOD".equals(text)) {
-//	                updateSearchBarWithDropdown();  // Switch to dropdown
-//	            } else {
-//	                updateSearchBarWithTextField();  // Keep default text field for others
-//	            }
+	
 	    		
 	    		if (text.equals("HOME")) {
 	    		    centerLayout.show(centerPanel, "HOME");
@@ -665,7 +663,6 @@ public class MainWindow{
 	    resultsSection.setLayout(new BoxLayout(resultsSection, BoxLayout.Y_AXIS));
 	    resultsSection.setOpaque(false);
 
-	    //JPanel resultsBody = new JPanel();
 	    resultsBody = new JPanel();
 	    resultsBody.setLayout(new BoxLayout(resultsBody, BoxLayout.Y_AXIS));
 	    resultsBody.setOpaque(false);
@@ -674,7 +671,7 @@ public class MainWindow{
 	    resultsSection.add(Box.createVerticalStrut(6));
 	    resultsSection.add(resultsBody);
 
-//	    main.add(buildSearchBar());
+	    main.add(buildSearchBar(planets, resultsBody));
 	    main.add(Box.createVerticalStrut(12));
 	    main.add(buildStatCards(planets));
 	    main.add(Box.createVerticalStrut(12));
@@ -694,9 +691,91 @@ public class MainWindow{
 	    main.add(Box.createVerticalStrut(8));
 	    main.add(bottom);
 
+	    
 	    return main;
 	}
 	
+	private JPanel buildSearchBar(List<Exoplanet> planets, JPanel rc) {
+		QueryEngine qe = new QueryEngine(planets);
+		JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 6));
+		JTextField field = new JTextField(20);
+        JButton searchButton = new JButton("SEARCH");
+        searchButton.setFont(pixelFontXs);
+        searchButton.setBackground(COL_ACCENT); 
+        searchButton.setForeground(BG_BASE);
+        searchButton.setOpaque(true);
+        searchButton.setBorderPainted(false);
+        ActionListener searchAction = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String query = field.getText();
+				field.setText("");
+
+				List<Exoplanet> results;
+
+				switch(currentSearchType) {
+					case "PLANET NAME":
+						results = qe.filterByName(query);
+						results.sort(Comparator.comparing(Exoplanet::getName));
+						break;
+					case "HOST STAR":
+						results = qe.filterByHostStar(query);
+						results.sort(Comparator.comparing(Exoplanet::getHostStar));
+						break;
+					case "METHOD":
+						results = qe.filterByDiscoveryMethod(query);
+						break;
+					case "RADIUS":
+						String[] parts = query.split(",");
+						double min = Double.parseDouble(parts[0].trim());
+						double max = Double.parseDouble(parts[1].trim());
+						results = qe.filterByRadius(min, max); // or mass depending on implementation	
+						break;
+					case "MASS":
+						String[] parts2 = query.split(",");
+						double min2 = Double.parseDouble(parts2[0].trim());
+						double max2 = Double.parseDouble(parts2[1].trim());
+						results = qe.filterByMass(min2, max2);
+						break;
+					case "ORBIT PERIOD":
+						parts = query.split(",");
+						min = Double.parseDouble(parts[0].trim());
+						max = Double.parseDouble(parts[1].trim());
+						results = qe.filterByOrbitalPeriod(min, max);
+						break;
+					case "YEAR":
+						int year = Integer.parseInt(query.trim());
+						results = qe.filterByYear(year);
+						break;
+					default:
+						results = qe.filterByName(query);
+						}
+				showResults(results); // update results count
+			}
+		};
+		
+		searchButton.addActionListener(searchAction);
+	    field.addActionListener(searchAction);
+
+		bar.setBackground(BG_PANEL);
+		bar.setBorder(BorderFactory.createLineBorder(COL_BORDER, 3));
+		bar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+		
+		// small arrow prompt
+		JLabel prompt = new JLabel("?");
+		prompt.setFont(pixelFontSm);
+		prompt.setForeground(COL_BORDER);
+
+		// this is now the class field so we can update dynamically
+		searchPromptLabel = new JLabel("ENTER PLANET NAME:");
+		searchPromptLabel.setFont(pixelFontXs);
+		searchPromptLabel.setForeground(COL_MUTED);
+		bar.add(prompt);
+		bar.add(searchPromptLabel); // this ispdated label
+		bar.add(field);
+		bar.add(searchButton);
+
+		return bar;}
 	
 	protected JPanel buildStatCards(List<Exoplanet> planets) {
 	    JPanel row = new JPanel(new GridLayout(1, 3, 8, 0));
@@ -946,7 +1025,7 @@ public class MainWindow{
 					// find the planetdetailpanel card and update
 					for (Component c : centerPanel.getComponents()) {
 						if (c instanceof PlanetDetailPanel) {
-							((PlanetDetailPanel) c).show(planet);
+							((PlanetDetailPanel) c).show(planet, currentSearchType);
 							break;
 						}
 					}
@@ -1023,9 +1102,11 @@ public class MainWindow{
 		    styleScrollPane(scrollPane);
 
 		    resultsBody.add(scrollPane);
+		    centerLayout.show(centerPanel, "RESULTS");
+
 		    resultsBody.revalidate();
 		    resultsBody.repaint();
-		}
+		    }
 		
 
 		public void show() {

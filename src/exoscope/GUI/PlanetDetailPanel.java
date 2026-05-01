@@ -18,6 +18,8 @@ public class PlanetDetailPanel extends JPanel {
 	private JLabel orbitLabel;
 	private JLabel distanceLabel;
 	
+	private String key;
+	
 	// canvas to draw the planet graphic
 	private PlanetCanvas planetCanvas;
 	
@@ -32,9 +34,41 @@ public class PlanetDetailPanel extends JPanel {
 	private void buildLayout() {
 		//back button at top
 		JButton backBtn = main.retroButton("<< back to results");
-		backBtn.addActionListener(e -> main.centerLayout.show(main.centerPanel, "MAIN"));
-	
-		
+		backBtn.addActionListener(e -> {	
+    		if (key.equals("HOME")) {
+    		    main.centerLayout.show(main.centerPanel, "HOME");
+
+    		} else if (key.equals("PLANET NAME")) {
+    			main.centerLayout.show(main.centerPanel, "PLANET_PANEL");
+
+    		} else if (key.equals("RADIUS")) {
+    		    main.centerLayout.show(main.centerPanel, "RADIUS_PANEL");
+
+    		} else if (key.equals("MASS")) {
+    		    main.centerLayout.show(main.centerPanel, "MASS_PANEL");
+
+    		} else if (key.equals("ORBIT PERIOD")) {
+    		    main.centerLayout.show(main.centerPanel, "ORBIT_PANEL");
+
+    		} else if (key.equals("HOST STAR")) {
+    		    main.centerLayout.show(main.centerPanel, "HOST_PANEL");
+    		} else if (key.equals("METHOD")) {
+    		    main.centerLayout.show(main.centerPanel, "METHOD_PANEL");
+    		} else if (key.equals("YEAR")) {
+    		    main.centerLayout.show(main.centerPanel, "YEAR_PANEL");
+    		} else {
+    		    main.centerLayout.show(main.centerPanel, "MAIN");
+    		}
+    	
+    	// to refresh sidebar 
+    	main.window.remove(main.sidebar);
+    	main.sidebar = main.buildSidebar();
+    	main.window.add(main.sidebar, BorderLayout.WEST);
+    	main.window.revalidate();
+    	main.window.repaint();
+    	
+		});
+
 		
 		JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		top.setOpaque(false);
@@ -118,7 +152,10 @@ public class PlanetDetailPanel extends JPanel {
 	}
 	
 	// called when a planet name is clicked, updates all the fields and redraws the graphic 
-	public void show(Exoplanet planet) {
+	public void show(Exoplanet planet, String search) {
+		
+		this.key = search;
+		
 		nameLabel.setText(planet.getName());
 		hostStarLabel.setText(planet.getHostStar());
 		yearLabel.setText(planet.getYear() !=null  ? String.valueOf(planet.getYear()) : "unknown");

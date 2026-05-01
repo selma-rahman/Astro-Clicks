@@ -43,16 +43,9 @@ public class MethodSearchWindow extends JPanel {
         JComboBox<String> methodDropdown = new JComboBox<>(methods);
         methodDropdown.setFont(MainWindow.pixelFontXs);
         methodDropdown.setBackground(MainWindow.BG_PANEL);
-        methodDropdown.setForeground(MainWindow.COL_TEXT);
+        methodDropdown.setForeground(MainWindow.COL_MUTED);
         // Ensure the dropdown doesn't stretch too thin
-        methodDropdown.setPreferredSize(new Dimension(250, 30)); 
-
-        JButton searchButton = new JButton("SEARCH");
-        searchButton.setFont(MainWindow.pixelFontXs);
-        searchButton.setBackground(MainWindow.COL_ACCENT);
-        searchButton.setForeground(MainWindow.BG_BASE);
-        searchButton.setOpaque(true);
-        searchButton.setBorderPainted(false);
+        methodDropdown.setPreferredSize(new Dimension(350, 30)); 
 
         JPanel search = new JPanel(new FlowLayout(FlowLayout.LEFT,15,6));
         search.setBackground(MainWindow.BG_PANEL);
@@ -70,8 +63,6 @@ public class MethodSearchWindow extends JPanel {
         search.add(prompt);
         search.add(label);
         search.add(methodDropdown); // Added dropdown instead of field
-        search.add(searchButton);
-
         top.add(search);
 
         // stat cards
@@ -151,7 +142,6 @@ public class MethodSearchWindow extends JPanel {
             }
         };
 
-        searchButton.addActionListener(searchAction);
         // Note: ComboBoxes don't use typical ActionListeners for "Enter" the same way TextFields do,
         // but you can add one to the dropdown itself if you want it to search immediately on selection.
         methodDropdown.addActionListener(searchAction); 
