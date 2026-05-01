@@ -33,6 +33,7 @@ public class PlanetDetailPanel extends JPanel {
 		//back button at top
 		JButton backBtn = main.retroButton("<< back to results");
 		backBtn.addActionListener(e -> main.centerLayout.show(main.centerPanel, "MAIN"));
+	
 		
 		
 		JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));

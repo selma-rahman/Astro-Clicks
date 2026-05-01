@@ -210,11 +210,12 @@ public class MainWindow{
 		sidebar.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 0, 3, COL_BORDER), BorderFactory.createEmptyBorder(14, 10, 14, 10)));
 		sidebar.setPreferredSize(new Dimension(200, 0));
 		
-		sidebar.add(sidebarSection("// TO NAVIGATE"));
+		sidebar.add(sidebarSection("// NAVIGATION"));
 		sidebar.add(sidebarItem("HOME", currentSearchType.equals("HOME")));
 		sidebar.add(Box.createVerticalStrut(8));
 		
 		sidebar.add(sidebarSection("// SEARCH BY"));
+		
 		sidebar.add(sidebarItem("PLANET NAME", currentSearchType.equals("PLANET NAME")));
 		sidebar.add(sidebarItem("HOST STAR", currentSearchType.equals("HOST STAR")));
 		sidebar.add(sidebarItem("METHOD", currentSearchType.equals("METHOD")));
@@ -257,7 +258,7 @@ public class MainWindow{
 	    item.addMouseListener(new MouseAdapter() {
 	        @Override
 	        public void mouseClicked(MouseEvent e) {
-	        	infoMode = true;
+	        	infoMode = false;
 	            centerLayout.show(centerPanel, "INFO_HOME");
 
 	            window.remove(sidebar);
@@ -696,7 +697,6 @@ public class MainWindow{
 	    return main;
 	}
 	
-
 	
 	protected JPanel buildStatCards(List<Exoplanet> planets) {
 	    JPanel row = new JPanel(new GridLayout(1, 3, 8, 0));
@@ -788,8 +788,7 @@ public class MainWindow{
 			}
 			return panel;
 		}
-	
-	
+
 		private JPanel buildHomePanel() {
 		    JPanel home = new JPanel();
 		    home.setLayout(new BoxLayout(home, BoxLayout.Y_AXIS));
@@ -859,8 +858,17 @@ public class MainWindow{
 		    JButton startButton = retroButton("START EXPLORING");
 		    startButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		    startButton.setMaximumSize(new Dimension(260, 45));
-		    startButton.addActionListener(e -> centerLayout.show(centerPanel, "PLANET_PANEL"));
-
+		    startButton.addActionListener(e -> {
+		    	currentSearchType = "PLANET NAME";
+		    	centerLayout.show(centerPanel, "PLANET_PANEL");
+		    	window.remove(sidebar);
+		    	sidebar = buildSidebar();
+		    	window.add(sidebar, BorderLayout.WEST);
+		    	window.revalidate();
+		    	window.repaint();
+		    });
+		  
+		    
 		    JLabel hint = new JLabel("Use the sidebar to search by different planet features.");
 		    hint.setFont(pixelFontXs);
 		    hint.setForeground(COL_MUTED);
@@ -959,8 +967,6 @@ public class MainWindow{
 			
 			return row;
 		}
-
-
 		
 		protected JPanel noResultsFound() {
 			JPanel nrf = new JPanel();
@@ -979,6 +985,9 @@ public class MainWindow{
 
 		}
 		
+		/*public void updateResultCount(int count) {
+			this.resultsCountLabel.setText(String.valueOf(count));
+		}*/
 		
 		protected void updateResultCount(int count) {
 		    if (resultsCountLabel != null) {
@@ -1022,6 +1031,8 @@ public class MainWindow{
 		public void show() {
 			window.setVisible(true);
 		}
+		
+		
 		
 		
 
