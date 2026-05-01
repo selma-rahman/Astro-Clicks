@@ -33,7 +33,7 @@ public class MainWindow{
 	public static final Color COL_ACCENT = new Color(0x7b, 0x7b, 0xff); // blue/purple for titles and things to be highlights
 	private static final Color COL_GREEN = new Color(0x00, 0xff, 0x88); // neon green, for the result count
 	
-	private String currentSearchType = "PLANET NAME"; // default search
+	private String currentSearchType = "HOME"; // default search
 	
 	private Font pixelFont; // large
 	public Font pixelFontSm; // medium
@@ -696,44 +696,7 @@ public class MainWindow{
 	    return main;
 	}
 	
-	// Modify the buildSearchBar method to accept either JTextField or JComboBox
-//	private JPanel buildSearchBar(JComponent component) {
-//	    JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 6));
-//
-//	    // Set the preferred size for the component (dropdown or text field)
-//	    component.setPreferredSize(new Dimension(200, 30));  // Adjust the size as necessary
-//
-//	    bar.add(component);
-//
-//	    JButton searchButton = new JButton("SEARCH");
-//	    searchButton.setFont(pixelFontXs);
-//	    searchButton.setBackground(COL_ACCENT); 
-//	    searchButton.setForeground(BG_BASE);
-//	    searchButton.setOpaque(true);
-//	    searchButton.setBorderPainted(false);
-//
-//	    searchButton.addActionListener(e -> {
-//	        String query = ((JTextField)component).getText();  // Handle textfield-based search
-//	        performSearch(query);
-//	    });
-//
-//	    bar.setBackground(BG_PANEL);
-//	    bar.setBorder(BorderFactory.createLineBorder(COL_BORDER, 3));
-//	    bar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));  // Ensure enough space for the component
-//
-//	    return bar;
-//	}
 
-	
-	
-	
-
-	
-	// Example method to perform search (for illustration purposes)
-//	private void performSearch(String query) {
-//	    // Logic to perform search based on the query (could be dropdown or text field)
-//	    System.out.println("Searching for: " + query);
-//	}
 	
 	protected JPanel buildStatCards(List<Exoplanet> planets) {
 	    JPanel row = new JPanel(new GridLayout(1, 3, 8, 0));
@@ -825,17 +788,7 @@ public class MainWindow{
 			}
 			return panel;
 		}
-		/*
-				String strP = i.toString();
-				panel.add(buildPlanetRow(strP));
-				panel.add(Box.createVerticalStrut(5));
-			}
-			if (p.size() == 0) {
-				panel = noResultsFound();
-			}
-			return panel;
-		}
-		*/
+	
 	
 		private JPanel buildHomePanel() {
 		    JPanel home = new JPanel();
@@ -1007,30 +960,7 @@ public class MainWindow{
 			return row;
 		}
 
-		/* making a new row so that only the name is click-able label rows
-		// a single result row
-		private JPanel buildPlanetRow(String text) {
-			JPanel row = new JPanel();
-			row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
-			row.setBackground(BG_PANEL);
-			row.setOpaque(false);
-			row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
-			row.setBorder(BorderFactory.createLineBorder(new Color(0x1a, 0x1a, 0x4a), 2));
 
-			JLabel star = new JLabel("\u2605");
-			star.setFont(pixelFontSm);
-			star.setForeground(COL_ACCENT);
-
-			JLabel label = new JLabel(text);
-			label.setFont(pixelFontXs);
-			label.setForeground(COL_TEXT);
-
-			row.add(star);
-			row.add(Box.createHorizontalStrut(5));
-			row.add(label);
-			return row;
-		}
-		*/
 		
 		protected JPanel noResultsFound() {
 			JPanel nrf = new JPanel();
@@ -1049,9 +979,6 @@ public class MainWindow{
 
 		}
 		
-		/*public void updateResultCount(int count) {
-			this.resultsCountLabel.setText(String.valueOf(count));
-		}*/
 		
 		protected void updateResultCount(int count) {
 		    if (resultsCountLabel != null) {
@@ -1095,8 +1022,6 @@ public class MainWindow{
 		public void show() {
 			window.setVisible(true);
 		}
-		
-		
 		
 		
 
