@@ -132,21 +132,42 @@ public class OrbitSearchWindow extends JPanel {
         ActionListener searchAction = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                JPanel x;
+                
+            	if (!minField.getText().trim().matches("-?\\d+(\\.\\d+)?")) {
+            		x = main.nonnumericError();
+            		main.updateResultCount(0);
+			        orbitResultsCountLabel.setText(String.valueOf(0));
+			        resultsContainer.removeAll();
+	                
+		            resultsContainer.add(x);
+		            resultsContainer.revalidate();
+		            resultsContainer.repaint();
+				    return;
+            	
+            	}
+            	
                 double min = Double.parseDouble(minField.getText().trim());
                 double max = Double.parseDouble(maxField.getText().trim());
-
-                List<Exoplanet> results = qe.filterByOrbitalPeriod(min, max);
-
+                if (max < min) {
+			        x = main.maxMinError();
+			        main.updateResultCount(0);
+			        orbitResultsCountLabel.setText(String.valueOf(0));
+			    } else {
+			    	List<Exoplanet> results = qe.filterByOrbitalPeriod(min, max);
+			    	x = main.buildResults(results);
+			    	main.updateResultCount(results.size());
+	                orbitResultsCountLabel.setText(String.valueOf(results.size()));
+			    }
+	            
                 resultsContainer.removeAll();
-                resultsContainer.add(main.buildResults(results));
+	                
+	            resultsContainer.add(x);
+	            resultsContainer.revalidate();
+	            resultsContainer.repaint();
+			    }
 
-                main.updateResultCount(results.size());
-                orbitResultsCountLabel.setText(String.valueOf(results.size()));
-
-                resultsContainer.revalidate();
-                resultsContainer.repaint();
-            }
+            
         };
 
         searchButton.addActionListener(searchAction);

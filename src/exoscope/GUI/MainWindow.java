@@ -10,6 +10,7 @@ import java.awt.event.*;
 import logic.QueryEngine;
 import model.Exoplanet;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.awt.Desktop;
@@ -729,19 +730,20 @@ public class MainWindow{
 						String[] parts = query.split(",");
 						double min = Double.parseDouble(parts[0].trim());
 						double max = Double.parseDouble(parts[1].trim());
-						results = qe.filterByRadius(min, max); // or mass depending on implementation	
+						results = qe.filterByRadius(min, max); 
+					    showResults(results);
 						break;
 					case "MASS":
 						String[] parts2 = query.split(",");
 						double min2 = Double.parseDouble(parts2[0].trim());
 						double max2 = Double.parseDouble(parts2[1].trim());
-						results = qe.filterByMass(min2, max2);
+						results = qe.filterByMass(min2, max2); 
 						break;
 					case "ORBIT PERIOD":
 						parts = query.split(",");
-						min = Double.parseDouble(parts[0].trim());
-						max = Double.parseDouble(parts[1].trim());
-						results = qe.filterByOrbitalPeriod(min, max);
+						double min3 = Double.parseDouble(parts[0].trim());
+						double max3 = Double.parseDouble(parts[1].trim());
+						results = qe.filterByOrbitalPeriod(min3, max3); 
 						break;
 					case "YEAR":
 						int year = Integer.parseInt(query.trim());
@@ -750,7 +752,7 @@ public class MainWindow{
 					default:
 						results = qe.filterByName(query);
 						}
-				showResults(results); // update results count
+				showResults(results);
 			}
 		};
 		
@@ -1064,6 +1066,51 @@ public class MainWindow{
 
 		}
 		
+		protected JPanel maxMinError() {
+			updateResultCount(0);
+		    resultsBody.removeAll();
+		   		
+			JPanel mme = new JPanel(new GridBagLayout()); // GridBag centers the text
+			mme.setBackground(BG_PANEL);
+			mme.setOpaque(false);
+			mme.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+			mme.setBorder(BorderFactory.createLineBorder(new Color(0x1a, 0x1a, 0x4a),2));
+			
+			JLabel text = new JLabel("Enter a maximum value larger than your minimum value.");
+			text.setFont(pixelFontSm);
+			text.setForeground(COL_TEXT);
+			
+			mme.add(text);
+			
+			return mme;
+			
+		}
+		
+		protected JPanel nonnumericError() {
+			updateResultCount(0);
+			resultsBody.removeAll();
+			
+			JPanel nne = new JPanel();
+		    nne.setLayout(new BoxLayout(nne, BoxLayout.Y_AXIS)); 
+			nne.setBackground(BG_PANEL);
+			nne.setOpaque(false);
+			nne.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+			
+			JLabel line1 = new JLabel("Please enter numeric values in the search fields.");
+			JLabel line2 = new JLabel("These can be integers or decimals.");
+			line1.setFont(pixelFontSm);
+			line1.setForeground(COL_TEXT);
+			line2.setFont(pixelFontSm);
+			line2.setForeground(COL_TEXT);
+			
+			nne.add(line1);
+		    nne.add(Box.createVerticalStrut(8));
+		    nne.add(line2);
+		    
+		    return(nne);
+		}
+			
+			
 		/*public void updateResultCount(int count) {
 			this.resultsCountLabel.setText(String.valueOf(count));
 		}*/
@@ -1096,7 +1143,6 @@ public class MainWindow{
 		
 		protected void showResults(List<Exoplanet> results) {
 		    updateResultCount(results.size());
-
 		    resultsBody.removeAll();
 		    JScrollPane scrollPane = new JScrollPane(buildResults(results));
 		    styleScrollPane(scrollPane);
@@ -1107,6 +1153,7 @@ public class MainWindow{
 		    resultsBody.revalidate();
 		    resultsBody.repaint();
 		    }
+		
 		
 
 		public void show() {

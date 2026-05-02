@@ -152,22 +152,43 @@ public class RadiusSearchWindow extends JPanel{
         ActionListener searchAction = new ActionListener() {
         	@Override
         	public void actionPerformed(ActionEvent e) {
-        		//double min = Double.parseDouble(minField.getText());
-                //double max = Double.parseDouble(maxField.getText());
+        		JPanel x;
+        		
+        		if (!minField.getText().trim().matches("-?\\d+(\\.\\d+)?")) {
+            		x = main.nonnumericError();
+            		main.updateResultCount(0);
+			        radiusResultsCountLabel.setText(String.valueOf(0));
+			        resultsContainer.removeAll();
+	                
+		            resultsContainer.add(x);
+		            resultsContainer.revalidate();
+		            resultsContainer.repaint();
+				    return;
+            	
+            	}
+        		
         		double min = Double.parseDouble(minField.getText().trim());
         		double max = Double.parseDouble(maxField.getText().trim());
 
-                List<Exoplanet> results = qe.filterByRadius(min, max);
-                
+                if (max < min) {
+			        x = main.maxMinError();
+			        main.updateResultCount(0);
+			        radiusResultsCountLabel.setText(String.valueOf(0));
+			    } else {
+			    	List<Exoplanet> results = qe.filterByOrbitalPeriod(min, max);
+			    	x = main.buildResults(results);
+			    	main.updateResultCount(results.size());
+	                radiusResultsCountLabel.setText(String.valueOf(results.size()));
+			    }
+	            
                 resultsContainer.removeAll();
-                resultsContainer.add(main.buildResults(results));
-                main.updateResultCount(results.size());
-                radiusResultsCountLabel.setText(String.valueOf(results.size()));
-
-                resultsContainer.revalidate();
-                resultsContainer.repaint();
-                
-        	}
+	                
+	            resultsContainer.add(x);
+	            resultsContainer.revalidate();
+	            resultsContainer.repaint();
+			}
+    
+               
         };
         
         searchButton.addActionListener(searchAction);
