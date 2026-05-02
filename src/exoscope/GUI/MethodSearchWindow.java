@@ -39,10 +39,29 @@ public class MethodSearchWindow extends JPanel {
         top.setOpaque(false);
 
         // --- UPDATED: Swapping JTextField for JComboBox ---
-        String[] methods = { " ","Transit", "Radial Velocity", "Imaging", "Transit Timing Variations", "Orbital Brightness Modulation", "Pulsation Timing Variations", "Microlensing" };
+        String[] methods = {"","Transit", "Radial Velocity", "Imaging", "Transit Timing Variations", "Orbital Brightness Modulation", "Pulsation Timing Variations", "Microlensing" };
         JComboBox<String> methodDropdown = new JComboBox<>(methods);
+        
+        // renderer is solution to little check box next to selected line that pixelfont wasn't picking up on
+        methodDropdown.setRenderer(new DefaultListCellRenderer() {
+        	@Override
+        	public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        		Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        		
+        		if (index >= 0 && index < methods.length) {
+        			c.setBackground(MainWindow.BG_PANEL);
+        		}
+        		if (isSelected) {
+        			c.setBackground(MainWindow.BG_CARD);
+        			c.setForeground(MainWindow.COL_MUTED);
+        		} else {
+        			c.setForeground(MainWindow.COL_MUTED);
+        		}
+        		return c;
+        	}
+        });
+        
         methodDropdown.setFont(MainWindow.pixelFontXs);
-        methodDropdown.setBackground(MainWindow.BG_PANEL);
         methodDropdown.setForeground(MainWindow.COL_MUTED);
         // Ensure the dropdown doesn't stretch too thin
         methodDropdown.setPreferredSize(new Dimension(350, 30)); 

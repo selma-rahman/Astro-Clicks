@@ -38,32 +38,50 @@ public class YearSearchWindow extends JPanel {
         top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
         top.setOpaque(false);
 
-        JTextField field = new JTextField(10);
-
-        JButton searchButton = new JButton("SEARCH");
-        searchButton.setFont(MainWindow.pixelFontXs);
-        searchButton.setBackground(MainWindow.COL_ACCENT);
-        searchButton.setForeground(MainWindow.BG_BASE);
-        searchButton.setOpaque(true);
-        searchButton.setBorderPainted(false);
+        // --- UPDATED: Swapping JTextField for JComboBox ---
+        Integer[] years = {null, 2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007, 2006, 2005, 2004, 2003, 2002, 2001, 2000, 1999};
+        JComboBox<Integer> yearDropdown = new JComboBox<>(years);
+        
+        // renderer is solution to little check box next to selected line that pixelfont wasn't picking up on
+        yearDropdown.setRenderer(new DefaultListCellRenderer() {
+        	@Override
+        	public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        		Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        		
+        		if (index >= 0 && index < years.length) {
+        			c.setBackground(MainWindow.BG_PANEL);
+        		}
+        		if (isSelected) {
+        			c.setBackground(MainWindow.BG_CARD);
+        			c.setForeground(MainWindow.COL_MUTED);
+        		} else {
+        			c.setForeground(MainWindow.COL_MUTED);
+        		}
+        		return c;
+        	}
+        });
+        
+        yearDropdown.setFont(MainWindow.pixelFontXs);
+        yearDropdown.setForeground(MainWindow.COL_MUTED);
+        // Ensure the dropdown doesn't stretch too thin
+        yearDropdown.setPreferredSize(new Dimension(200, 30)); 
 
         JPanel search = new JPanel(new FlowLayout(FlowLayout.LEFT,15,6));
         search.setBackground(MainWindow.BG_PANEL);
         search.setBorder(BorderFactory.createLineBorder(MainWindow.COL_BORDER,3));
-        search.setMaximumSize(new Dimension(Integer.MAX_VALUE,40));
+        search.setMaximumSize(new Dimension(Integer.MAX_VALUE,45));
 
         JLabel prompt = new JLabel("?");
         prompt.setFont(main.pixelFontSm);
         prompt.setForeground(MainWindow.COL_BORDER);
 
-        JLabel label = new JLabel("ENTER YEAR:");
+        JLabel label = new JLabel("SELECT YEAR:");
         label.setFont(main.pixelFontXs);
         label.setForeground(MainWindow.COL_MUTED);
 
         search.add(prompt);
         search.add(label);
-        search.add(field);
-        search.add(searchButton);
+        search.add(yearDropdown); // Added dropdown instead of field
 
         top.add(search);
 
@@ -124,37 +142,28 @@ public class YearSearchWindow extends JPanel {
 
         QueryEngine qe = new QueryEngine(planets);
 
+     // --- UPDATED: Action Listener now reads from JComboBox ---
         ActionListener searchAction = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                try {
-                    int year = Integer.parseInt(field.getText().trim());
+                int query = (int) yearDropdown.getSelectedItem();
 
-                    List<Exoplanet> results = qe.filterByYear(year);
-                    resultsContainer.removeAll();
-                    resultsContainer.add(main.buildResults(results));
+                List<Exoplanet> results = qe.filterByYear(query);
+                results.sort(Comparator.comparing(Exoplanet::getYear));
 
-                    main.updateResultCount(results.size());
-                    yearResultsCountLabel.setText(String.valueOf(results.size()));
+                resultsContainer.removeAll();
+                resultsContainer.add(main.buildResults(results));
 
-                    resultsContainer.revalidate();
-                    resultsContainer.repaint();
+                main.updateResultCount(results.size());
+                yearResultsCountLabel.setText(String.valueOf(results.size()));
 
-                } catch(Exception ex) {
-                    resultsContainer.removeAll();
-                    resultsContainer.add(main.noResultsFound());
-
-                    main.updateResultCount(0);
-                    yearResultsCountLabel.setText("0");
-
-                    resultsContainer.revalidate();
-                    resultsContainer.repaint();
-                }
+                resultsContainer.revalidate();
+                resultsContainer.repaint();
             }
         };
 
-        searchButton.addActionListener(searchAction);
-        field.addActionListener(searchAction);
+        yearDropdown.addActionListener(searchAction); 
+
     }
 }
