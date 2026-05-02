@@ -107,6 +107,7 @@ public class MainWindow{
 		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		window.setSize(1200, 700);
 		window.setLocationRelativeTo(null);
+		window.setMinimumSize(new Dimension(950,550));
 		
 		//okay panel to paint the star background
 		JPanel root = new JPanel(new BorderLayout()) {
@@ -288,19 +289,6 @@ public class MainWindow{
 
 	    JPanel top = new JPanel(new BorderLayout());
 	    top.setOpaque(false);
-
-	    JButton backButton = retroButton("<< back to search");
-	    backButton.addActionListener(e -> {
-	        infoMode = false;
-	        centerLayout.show(centerPanel, "MAIN");
-
-	        window.remove(sidebar);
-	        sidebar = buildSidebar();
-	        window.add(sidebar, BorderLayout.WEST);
-
-	        window.revalidate();
-	        window.repaint();
-	    });
 	    
 	    JButton homeButton = retroButton("HOME");
 	    homeButton.addActionListener(e ->
@@ -337,7 +325,6 @@ public class MainWindow{
 	    JPanel leftButtons = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
 	    leftButtons.setOpaque(false);
 
-	    leftButtons.add(backButton);
 	    leftButtons.add(homeButton);
 
 	    top.add(leftButtons, BorderLayout.WEST); // homebutton and backbutton
