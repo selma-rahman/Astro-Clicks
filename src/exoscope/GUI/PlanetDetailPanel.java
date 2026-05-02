@@ -94,6 +94,18 @@ public class PlanetDetailPanel extends JPanel {
 		orbitLabel = styledLabel("...");
 		distanceLabel = styledLabel("...");
 		
+		
+	    JLabel littleEarthSymbol = new JLabel("⊕");
+	    littleEarthSymbol.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		littleEarthSymbol.setForeground(MainWindow.COL_TEXT);
+		
+		// duplicate symbol bc it can't get reused for some reason????
+		JLabel littleEarthSymbol2 = new JLabel("⊕");
+		littleEarthSymbol2.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		littleEarthSymbol2.setForeground(MainWindow.COL_TEXT);
+		
+		
+		
 		JPanel infoPanel = new JPanel();
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 		infoPanel.setOpaque(false);
@@ -106,9 +118,9 @@ public class PlanetDetailPanel extends JPanel {
 		infoPanel.add(Box.createVerticalStrut(12));
 		infoPanel.add(fieldRow("DISC. METHOD", methodLabel));
 		infoPanel.add(Box.createVerticalStrut(12));
-		infoPanel.add(fieldRow("RADIUS (EARTH=1)", radiusLabel));
+		infoPanel.add(massradiusRow("RADIUS (EARTH=1)", radiusLabel,littleEarthSymbol));
 		infoPanel.add(Box.createVerticalStrut(12));
-		infoPanel.add(fieldRow("MASS (EARTH=1)", massLabel));
+		infoPanel.add(massradiusRow("MASS (EARTH=1)", massLabel, littleEarthSymbol2));
 		infoPanel.add(Box.createVerticalStrut(12));
 		infoPanel.add(fieldRow("ORBITAL PERIOD", orbitLabel));
 		infoPanel.add(Box.createVerticalStrut(12));
@@ -144,10 +156,41 @@ public class PlanetDetailPanel extends JPanel {
 		return row;
 	}
 	
+	// build label/value/symbol pair row
+		private JPanel massradiusRow(String fieldName, JLabel valueLabel, JLabel symbol) {
+			JPanel row = new JPanel();
+			row.setLayout(new BoxLayout(row, BoxLayout.Y_AXIS));
+			row.setOpaque(false);
+			row.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,  0,  1,  0,  new Color(0x1a, 0x1a, 0x4a)),
+					BorderFactory.createEmptyBorder(0, 0, 6, 0)));
+			
+			JLabel key = new JLabel(fieldName);
+			key.setFont(main.pixelFontXs);
+			key.setForeground(MainWindow.COL_BORDER);
+			key.setAlignmentX(Component.LEFT_ALIGNMENT);
+			
+			
+			 JPanel valueSymbolPair = new JPanel();
+			 valueSymbolPair.setLayout(new BoxLayout(valueSymbolPair, BoxLayout.X_AXIS));
+			 valueSymbolPair.setOpaque(false);
+			 valueSymbolPair.setAlignmentX(Component.LEFT_ALIGNMENT);
+			    
+			 valueSymbolPair.add(valueLabel);
+			 valueSymbolPair.add(symbol); 
+
+			 row.add(key);
+			 row.add(Box.createVerticalStrut(3));
+			 row.add(valueSymbolPair);
+			 
+			return row;
+		}
+	
+	
+	
 	private JLabel styledLabel(String text) {
 		JLabel l = new JLabel(text);
 		l.setFont(main.pixelFontXs);
-		l.setForeground(MainWindow.COL_TEXT);;
+		l.setForeground(MainWindow.COL_TEXT);
 		return l;
 	}
 	
@@ -160,8 +203,8 @@ public class PlanetDetailPanel extends JPanel {
 		hostStarLabel.setText(planet.getHostStar());
 		yearLabel.setText(planet.getYear() !=null  ? String.valueOf(planet.getYear()) : "unknown");
 		methodLabel.setText(planet.getDiscoveryMethod());
-		radiusLabel.setText(planet.getRadius() != null ? String.valueOf(planet.getRadius()) + " R⊕" : "unknown");
-		massLabel.setText(planet.getMass() != null ? String.valueOf(planet.getMass()) + " M⊕" : "unknown");
+		radiusLabel.setText(planet.getRadius() != null ? String.valueOf(planet.getRadius()) + " R" : "unknown");
+		massLabel.setText(planet.getMass() != null ? String.valueOf(planet.getMass()) + " M" : "unknown");
 		orbitLabel.setText(planet.getOrbitalPeriod() != null ? String.valueOf(planet.getOrbitalPeriod()) + " days" : "unknown");
 		distanceLabel.setText(planet.getDistance() != null ? String.valueOf(planet.getDistance()) + " pc" : "unknown");
 		
