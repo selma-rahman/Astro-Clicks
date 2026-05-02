@@ -388,7 +388,7 @@ public class MainWindow{
 
 	    grid.add(createMethodCard(
 	        "STARSHADE",
-	        "images/starshade.png",
+	        "images/starshade.jpeg",
 	        "Starshade",
 	        "A starshade is a large spacecraft positioned far from a telescope to block starlight before it enters the telescope, helping scientists directly observe exoplanets."
 	    ));
@@ -448,11 +448,11 @@ public class MainWindow{
 	}
 	
 	private JLabel buildCardImageLabel(String imagePath) {
-	    java.net.URL url = getClass().getResource(imagePath);
+	    java.net.URL url = getClass().getResource("/" + imagePath);
 
 	    if (url != null) {
 	        ImageIcon icon = new ImageIcon(url);
-	        Image scaled = icon.getImage().getScaledInstance(110, 80, Image.SCALE_SMOOTH);
+	        Image scaled = icon.getImage().getScaledInstance(110, -1, Image.SCALE_SMOOTH);
 	        return new JLabel(new ImageIcon(scaled));
 	    }
 
@@ -526,10 +526,10 @@ public class MainWindow{
 	private void showMethodDetail(String title, String text, String imagePath) {
 	    detailTitleLabel.setText(title);
 	    detailTextArea.setText(text);		    
-	    java.net.URL url = getClass().getResource(imagePath);
+	    java.net.URL url = getClass().getResource("/" + imagePath);
 	    if (url != null) {
 	        ImageIcon icon = new ImageIcon(url);
-	        Image scaled = icon.getImage().getScaledInstance(240, 180, Image.SCALE_SMOOTH);
+	        Image scaled = icon.getImage().getScaledInstance(240, -1, Image.SCALE_SMOOTH);
 	        detailImageLabel.setIcon(new ImageIcon(scaled));
 	        detailImageLabel.setText("");
 	    } else {
