@@ -131,9 +131,49 @@ public class PlanetDetailPanel extends JPanel {
 		center.add(leftPanel, BorderLayout.WEST);
 		center.add(infoPanel, BorderLayout.CENTER);
 		
+		JPanel south = new JPanel();
+		south.setLayout(new BoxLayout(south, BoxLayout.Y_AXIS));
+		south.setOpaque(false);
+		south.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));;
+		south.add(buildUnitsGuide());
+		
 		add(top, BorderLayout.NORTH);
 		add(center, BorderLayout.CENTER);	
+		add(south, BorderLayout.SOUTH);
 	}
+	
+	// box for info on the units and such
+	private JPanel buildUnitsGuide() {
+		JPanel guide = new JPanel();
+		guide.setLayout(new BoxLayout(guide, BoxLayout.Y_AXIS));
+		guide.setBackground(MainWindow.BG_PANEL);
+		guide.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(MainWindow.COL_BORDER, 1), BorderFactory.createEmptyBorder(10, 14, 10, 14)));
+		JLabel title = new JLabel("// UNITS GUIDE");
+		title.setFont(main.pixelFontXs);
+		title.setForeground(MainWindow.COL_BORDER);
+		title.setAlignmentX(Component.LEFT_ALIGNMENT);
+		
+		JLabel r = new JLabel("R\u2295 = radius relative to Earth (1 R\u2295 = 6,371 km)");
+		JLabel m = new JLabel("M\u2295 = mass relative to Earth  (1 M\u2295 = 5.97 \u00D7 10\u00B2\u2074 kg)");
+		JLabel d = new JLabel("pc = parsecs (1 pc = 3.26 light years = ~19 trillion miles)");
+		JLabel o = new JLabel("days = length of one full orbit around the host star");
+		
+		for (JLabel l : new JLabel[] {r, m, d, o}) {
+			l.setFont(main.pixelFontXs);
+			l.setForeground(MainWindow.COL_MUTED);
+			l.setAlignmentX(Component.LEFT_ALIGNMENT);
+			l.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
+		}
+		
+		guide.add(title);
+		guide.add(Box.createVerticalStrut(6));
+		guide.add(r);
+		guide.add(m);
+		guide.add(d);
+		guide.add(o);
+		
+		return guide;
+		}
 	
 	// build label/value pair row
 	private JPanel fieldRow(String fieldName, JLabel valueLabel) {
