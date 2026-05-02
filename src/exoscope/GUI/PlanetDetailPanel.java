@@ -153,8 +153,8 @@ public class PlanetDetailPanel extends JPanel {
 		title.setForeground(MainWindow.COL_BORDER);
 		title.setAlignmentX(Component.LEFT_ALIGNMENT);
 		
-		JLabel r = new JLabel("R\u2295 = radius relative to Earth (1 R\u2295 = 6,371 km)");
-		JLabel m = new JLabel("M\u2295 = mass relative to Earth  (1 M\u2295 = 5.97 \u00D7 10\u00B2\u2074 kg)");
+		JLabel r = new JLabel("<html>R<span style='font-family:Arial Unicode MS'>⊕</span> = radius relative to Earth &nbsp;(1 R<span style='font-family:Arial Unicode MS'>⊕</span> = 6,371 km)</html>");
+		JLabel m = new JLabel("<html>M<span style='font-family:Arial Unicode MS'>⊕</span> = mass relative to Earth &nbsp;(1 M<span style='font-family:Arial Unicode MS'>⊕</span> = 5.97 × 10²⁴ kg)</html>");
 		JLabel d = new JLabel("pc = parsecs (1 pc = 3.26 light years = ~19 trillion miles)");
 		JLabel o = new JLabel("days = length of one full orbit around the host star");
 		
