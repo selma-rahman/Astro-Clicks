@@ -73,6 +73,8 @@ public class MassSearchWindow extends JPanel {
         search.add(searchButton);
 
         top.add(search);
+        top.add(Box.createVerticalStrut(8));
+        top.add(main.buildRangeInfoBox(planets, "MASS"));
 
         // stat cards
         JPanel stats = new JPanel(new GridLayout(1,3,8,0));

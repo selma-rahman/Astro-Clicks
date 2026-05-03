@@ -38,7 +38,7 @@ public class MethodSearchWindow extends JPanel {
         top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
         top.setOpaque(false);
 
-        // --- UPDATED: Swapping JTextField for JComboBox ---
+        // Swapping JTextField for JComboBox 
         String[] methods = {"","Transit", "Radial Velocity", "Imaging", "Transit Timing Variations", "Orbital Brightness Modulation", "Pulsation Timing Variations", "Microlensing" };
         JComboBox<String> methodDropdown = new JComboBox<>(methods);
         
@@ -140,7 +140,7 @@ public class MethodSearchWindow extends JPanel {
 
         QueryEngine qe = new QueryEngine(planets);
 
-        // --- UPDATED: Action Listener now reads from JComboBox ---
+        //Action Listener now reads from JComboBox
         ActionListener searchAction = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -161,8 +161,6 @@ public class MethodSearchWindow extends JPanel {
             }
         };
 
-        // Note: ComboBoxes don't use typical ActionListeners for "Enter" the same way TextFields do,
-        // but you can add one to the dropdown itself if you want it to search immediately on selection.
         methodDropdown.addActionListener(searchAction); 
     }
 }

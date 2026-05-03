@@ -69,6 +69,8 @@ public class RadiusSearchWindow extends JPanel{
         search.add(searchButton);
         
         top.add(search);
+        top.add(Box.createVerticalStrut(8));
+        top.add(main.buildRangeInfoBox(planets, "RADIUS"));
 
      // local stats row
      JPanel stats = new JPanel(new GridLayout(1, 3, 8, 0));
@@ -125,30 +127,9 @@ public class RadiusSearchWindow extends JPanel{
         this.add(top, BorderLayout.NORTH);
         this.add(scrollPane, BorderLayout.CENTER);
 
-        /*
-		 window = new JFrame("Search by Radius"); 
-		 window.setSize(500,400);
-		 window.setLocationRelativeTo(null); 
-		 window.setLayout(new BorderLayout());
-		 */
 
         QueryEngine qe = new QueryEngine(planets);
-		/*
-		 * JTextField minField = new JTextField(5); JTextField maxField = new
-		 * JTextField(5); JButton searchButton = new JButton("SEARCH");
-		 */
-        
-		/*
-		 * JPanel search = new JPanel(); search.add(new
-		 * JLabel("Min radius (in earth radi):")); search.add(minField); search.add(new
-		 * JLabel("Max radius (in earth radi):")); search.add(maxField);
-		 * search.add(searchButton);
-		 */
-		/*
-		 * JTextArea resultsArea = new JTextArea(); resultsArea.setEditable(false);
-		 */
-        
-        
+		
         ActionListener searchAction = new ActionListener() {
         	@Override
         	public void actionPerformed(ActionEvent e) {
@@ -195,20 +176,7 @@ public class RadiusSearchWindow extends JPanel{
         maxField.addActionListener(searchAction);
         minField.addActionListener(searchAction);
         
-		/*
-		 * searchButton.addActionListener(e -> { try { double min =
-		 * Double.parseDouble(minField.getText()); double max =
-		 * Double.parseDouble(maxField.getText());
-		 * 
-		 * List<Exoplanet> results = qe.filterByRadius(min, max);
-		 * 
-		 * resultsContainer.removeAll();
-		 * resultsContainer.add(main.buildResults(results));
-		 * main.updateResultCount(results.size());
-		 * 
-		 * resultsContainer.revalidate(); resultsContainer.repaint(); } catch(Exception
-		 * ex){ } });
-		 */
+		
     }
 
 }
