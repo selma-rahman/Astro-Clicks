@@ -175,7 +175,7 @@ public class RadiusSearchWindow extends JPanel{
 			        main.updateResultCount(0);
 			        radiusResultsCountLabel.setText(String.valueOf(0));
 			    } else {
-			    	List<Exoplanet> results = qe.filterByOrbitalPeriod(min, max);
+			    	List<Exoplanet> results = qe.filterByRadius(min, max);
 			    	x = main.buildResults(results);
 			    	main.updateResultCount(results.size());
 	                radiusResultsCountLabel.setText(String.valueOf(results.size()));

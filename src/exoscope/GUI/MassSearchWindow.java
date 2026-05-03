@@ -155,7 +155,7 @@ public class MassSearchWindow extends JPanel {
 			        main.updateResultCount(0);
 			        massResultsCountLabel.setText(String.valueOf(0));
 			    } else {
-			    	List<Exoplanet> results = qe.filterByOrbitalPeriod(min, max);
+			    	List<Exoplanet> results = qe.filterByMass(min, max);
 			    	x = main.buildResults(results);
 			    	main.updateResultCount(results.size());
 	                massResultsCountLabel.setText(String.valueOf(results.size()));
