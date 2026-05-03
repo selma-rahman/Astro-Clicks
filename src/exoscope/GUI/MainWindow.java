@@ -640,7 +640,7 @@ public class MainWindow{
         hdr.setMaximumSize(new Dimension(Integer.MAX_VALUE, 24));
         hdr.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(0x1a, 0x1a, 0x4a)));
 
-        JLabel left = new JLabel("\u25BC RESULTS");
+        JLabel left = new JLabel("\u25BC RESULTS: BY NAME");
         left.setFont(pixelFontXs);
         left.setForeground(COL_BORDER);
 
