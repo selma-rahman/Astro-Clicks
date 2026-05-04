@@ -1,3 +1,4 @@
+// this is our original code implemention for the CLI, our main program runs  GUI via MainWinow.java now
 package UI;
 import model.Exoplanet;
 import java.util.*;
