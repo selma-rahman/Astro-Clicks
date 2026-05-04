@@ -1,6 +1,7 @@
 package GUI;
 
 import javax.swing.*;
+
 import javax.swing.border.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
@@ -19,6 +20,7 @@ import java.net.URI;
 import javax.swing.JTextPane;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
+import GUI.RocketAnimation;
 
 public class MainWindow{
 	// color palette, hex codes
@@ -747,7 +749,7 @@ public class MainWindow{
 		    hint.setForeground(COL_MUTED);
 		    hint.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		    home.add(Box.createVerticalGlue());
+		    //home.add(Box.createVerticalGlue());
 		    home.add(welcome);
 		    home.add(Box.createVerticalStrut(10));
 		    home.add(panel);
@@ -758,10 +760,24 @@ public class MainWindow{
 		    home.add(Box.createVerticalStrut(20));
 		    home.add(cards);
 		    home.add(Box.createVerticalStrut(25));
+
 		    home.add(startButton);
-		    home.add(Box.createVerticalStrut(15));
+		    home.add(Box.createVerticalStrut(10));
+
+		    // for our rocket animation 
+		    RocketAnimation rocket = new RocketAnimation();
+		    rocket.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		    // so the rocket goes across the whole width of the panel
+		    rocket.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
+		    rocket.setPreferredSize(new Dimension(900, 150));
+		    home.add(rocket);
+		    
+		    home.add(Box.createVerticalStrut(10));
 		    home.add(hint);
-		    home.add(Box.createVerticalStrut(20));
+		    home.add(Box.createVerticalStrut(10));
+		    //home.add(Box.createVerticalStrut(15)); 
+		    
 
 		    JLabel stars = new JLabel("✦　　·　　　*　　　✯　　　•　　　☆　　　*　　　·　　✦");
 		    stars.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
