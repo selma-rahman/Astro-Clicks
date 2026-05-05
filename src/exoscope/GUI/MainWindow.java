@@ -706,7 +706,7 @@ public class MainWindow{
 		    subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		    JTextPane info = new JTextPane();
-		    info.setText("Exoscope is an application that allows users to explore and analyze data about discovered exoplanets using publicly available NASA datasets. Users will be able to query exoplanets based on characteristics such as: size, orbital period, distance from Earth, and host star properties. The system will display results in a structured format and later revisions will provide visualizations to help users understand patterns and trends." +
+		    info.setText("Exoscope is an application that allows users to explore and analyze data about discovered exoplanets using publicly available NASA datasets. Users will be able to query exoplanets based on characteristics such as: size, orbital period, distance from Earth, and host star properties. The system will display results in a structured format and later revisions will provide visualizations to help users understand patterns and trends. " +
 		        "Choose whichever search option that you are most curious about from the sidebar or start with planet name.");		    
 		    SimpleAttributeSet attributes = new SimpleAttributeSet();
 		    StyleConstants.setLineSpacing(attributes,0.7f);

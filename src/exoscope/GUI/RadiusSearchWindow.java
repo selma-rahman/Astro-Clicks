@@ -99,6 +99,8 @@ public class RadiusSearchWindow extends JPanel{
      radiusResultsCountLabel = new JLabel("0");
      radiusResultsCountLabel.setFont(main.pixelFontSm);
      radiusResultsCountLabel.setForeground(new Color(0x00,255,136));
+     radiusResultsCountLabel.setBorder(BorderFactory.createEmptyBorder(6,0,0,0));
+
 
      resultsCard.add(resultsLabel);
      resultsCard.add(radiusResultsCountLabel);
